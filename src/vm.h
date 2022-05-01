@@ -7,6 +7,22 @@
 
 #include "ops.h"
 
+#include <fmt/core.h>
+
+#define DEBUG_LEVEL 1
+
+#if DEBUG_LEVEL >= 1
+  #define VM_DEBUG_1(...) fmt::print("[vm]\t {}\n", fmt::format(__VA_ARGS__))
+#else
+  #define VM_DEBUG_1(...)
+#endif
+
+#if DEBUG_LEVEL >= 2
+  #define VM_DEBUG_2(...) fmt::print("[vm]\t {}\n", fmt::format(__VA_ARGS__))
+#else
+  #define VM_DEBUG_2(...)
+#endif
+
 // (u)int128_t is not part of the C++ standard
 typedef __int128_t int128_t;
 typedef __uint128_t uint128_t;
@@ -171,6 +187,27 @@ namespace lang {
         case _i128: return "i128";
         case _u128: return "u128";
         case _f128: return "f128";
+        default: return "UNKNOWN";
+      }
+    }
+
+    inline std::string get_value_string() const {
+      switch (_type) {
+        case _none: return "none";
+        case _i8: return std::to_string(value._i8);
+        case _u8: return std::to_string(value._u8);
+        case _bool: return std::to_string(value._bool);
+        case _i16: return std::to_string(value._i16);
+        case _u16: return std::to_string(value._u16);
+        case _i32: return std::to_string(value._i32);
+        case _u32: return std::to_string(value._u32);
+        case _f32: return std::to_string(value._f32);
+        case _i64: return std::to_string(value._i64);
+        case _u64: return std::to_string(value._u64);
+        case _f64: return std::to_string(value._f64);
+        case _i128: return fmt::format("{:x}", value._i128); // not sure
+        case _u128: return fmt::format("{:x}", value._u128);
+        case _f128: return std::to_string(value._f128);
         default: return "UNKNOWN";
       }
     }
@@ -363,6 +400,8 @@ namespace lang {
     void jnz(size_t offset);
     void jl(size_t offset);
     void jg(size_t offset);
+    void jnl(size_t offset);
+    void jng(size_t offset);
     void jmp(size_t offset);
     void ret();
     void dbg(int8_t i);

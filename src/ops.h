@@ -78,6 +78,8 @@ namespace lang {
     JNZ,
     JL,
     JG,
+    JNL,
+    JNG,
     JMP,
 
     RET,

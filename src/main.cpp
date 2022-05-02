@@ -8,69 +8,6 @@
 
 /*
 
-subroutine fib() returns u64
-  local a: u64 = 0    // local#0
-  local b: u64 = 1    // local#1
-  local temp: u64 = 0 // local#2
-
-  stack i: u8 = 0
-%label1
-  if i >= 9 goto label2
-    i++
-    temp = a + b
-    a = b
-    b = temp
-    goto label1
-%label2
-  discard i
-
-  return temp
-end subroutine
-
-
-*/
-
-
-// Calculate the 80th fibonacci number
-const uint8_t program[] = {
-  // stack i: u8 = 0
-  lang::Op::PUSH_U8,    0,
-  // local a: u64 = 0
-  lang::Op::SETL_U64,   0,    0,0,0,0,0,0,0,0,
-  // local b: u64 = 1
-  lang::Op::SETL_U64,   1,    1,0,0,0,0,0,0,0,
-  // local temp: u64 = 0
-  lang::Op::SETL_U64,   2,    0,0,0,0,0,0,0,0,
-  // start loop
-  // if (i >= (80-1)) goto end
-  lang::Op::PUSH_U8,    80-1,
-  lang::Op::CMP_U8,
-  lang::Op::POP1,
-  lang::Op::JNL,        71,0,0,0,0,0,0,0,
-  // i++
-  lang::Op::INC_U8,
-  // temp = a + b
-  lang::Op::PUSHL_U64,  0, // push from a
-  lang::Op::PUSHL_U64,  1, // push from b
-  lang::Op::ADD_U64,
-  lang::Op::POPL_U64,   2, // pop to temp
-  lang::Op::POP8,          // discard pushed a
-  // a = b
-  lang::Op::PUSHL_U64,  1, // push from b
-  lang::Op::POPL_U64,   0, // pop to a
-  // b = temp
-  lang::Op::PUSHL_U64,  2, // push from temp
-  lang::Op::POPL_U64,   1, // pop to b
-  // goto start
-  lang::Op::JMP,        32,0,0,0,0,0,0,0,
-  // end
-  lang::Op::POP1,
-  lang::Op::PUSHL_U64,  2, // push from temp
-  lang::Op::RET,
-};
-
-/*
-
 === source: ===
 
 u8 fib() {

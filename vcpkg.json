@@ -3,6 +3,7 @@
   "name": "language",
   "version": "0.0.1",
   "dependencies": [
-    "fmt"
+    "fmt",
+    "boost-multiprecision"
   ]
 }

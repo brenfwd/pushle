@@ -4,41 +4,66 @@
 #include "ops.h"
 #include "vm.h"
 
+/*
+
+subroutine fib() returns u64
+  local a: u64 = 0    // local#0
+  local b: u64 = 1    // local#1
+  local temp: u64 = 0 // local#2
+
+  stack i: u8 = 0
+%label1
+  if i >= 9 goto label2
+    i++
+    temp = a + b
+    a = b
+    b = temp
+    goto label1
+%label2
+  discard i
+
+  return temp
+end subroutine
+
+
+*/
+
+
 // Calculate the 10th fibonacci number
 const uint8_t program[] = {
-  // i (on stack)
-  lang::Op::PUSH_U8, 0,
-  // a(#0) = 0
-  lang::Op::SETL_U8, 0, 0,
-  // b(#1) = 1
-  lang::Op::SETL_U8, 1, 1,
-  // temp(#2) = 0
-  lang::Op::SETL_U8, 2, 0,
+  // stack i: u16 = 0
+  lang::Op::PUSH_U16,    0,0,
+  // local a: u128 = 0
+  lang::Op::SETL_U128,  0,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  // local b: u128 = 1
+  lang::Op::SETL_U128,  1,    1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  // local temp: u128 = 0
+  lang::Op::SETL_U128,  2,    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
   // start loop
-  // if (i >= 9) goto end (9 = 10 - 1)
-  lang::Op::PUSH_U8, 9,
-  lang::Op::CMP_U8,
-  lang::Op::POP1,
-  lang::Op::JNL, 50,0,0,0,0,0,0,0,
+  // if (i >= 100-1) goto end
+  lang::Op::PUSH_U16,    0xaa, 0x00, //100-1,0,
+  lang::Op::CMP_U16,
+  lang::Op::POP2,
+  lang::Op::JNL,        97,0,0,0,0,0,0,0,
   // i++
-  lang::Op::INC_U8,
-  // temp(#2) = a(#0) + b(#1)
-  lang::Op::PUSHL_U8, 0,
-  lang::Op::PUSHL_U8, 1,
-  lang::Op::ADD_U8,
-  lang::Op::POPL_U8, 2,
-  lang::Op::POP1,
-  // a(#0) = b(#1)
-  lang::Op::PUSHL_U8, 1,
-  lang::Op::POPL_U8, 0,
-  // b(#1) = temp(#2)
-  lang::Op::PUSHL_U8, 2,
-  lang::Op::POPL_U8, 1,
+  lang::Op::INC_U16,
+  // temp = a + b
+  lang::Op::PUSHL_U128, 0, // push from a
+  lang::Op::PUSHL_U128, 1, // push from b
+  lang::Op::ADD_U128,
+  lang::Op::POPL_U128,  2, // pop to temp
+  lang::Op::POP16,          // discard pushed a
+  // a = b
+  lang::Op::PUSHL_U128, 1, // push from b
+  lang::Op::POPL_U128,  0, // pop to a
+  // b = temp
+  lang::Op::PUSHL_U128, 2, // push from temp
+  lang::Op::POPL_U128,  1, // pop to b
   // goto start
-  lang::Op::JMP, 11,0,0,0,0,0,0,0,
+  lang::Op::JMP,        57,0,0,0,0,0,0,0,
   // end
-  lang::Op::POP1,
-  lang::Op::PUSHL_U8, 2, // result
+  lang::Op::POP2,          // discard i
+  lang::Op::PUSHL_U128, 2, // push from temp
   lang::Op::RET,
 };
 
@@ -120,5 +145,6 @@ int main() {
   fmt::print("\nExecuting program...\n");
   lang::VM vm;
   vm.run(program, sizeof(program));
+  fmt::print("Result as u128: {}\n", boost::multiprecision::to_string(vm.get_u128()));
   return 0;
 }

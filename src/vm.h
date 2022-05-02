@@ -7,6 +7,7 @@
 
 #include "ops.h"
 
+#include <boost/multiprecision/cpp_int.hpp>
 #include <fmt/core.h>
 
 #define DEBUG_LEVEL 1
@@ -24,8 +25,11 @@
 #endif
 
 // (u)int128_t is not part of the C++ standard
-typedef __int128_t int128_t;
-typedef __uint128_t uint128_t;
+typedef boost::multiprecision::int128_t int128_t;
+typedef boost::multiprecision::uint128_t uint128_t;
+typedef long double float128_t;
+// typedef __int128 int128_t;
+// typedef __uint128_t uint128_t;
 
 #define _FN_T(return_type, prefix, ...) \
   return_type prefix##i8(__VA_ARGS__); \
@@ -57,7 +61,7 @@ typedef __uint128_t uint128_t;
   return_type prefix##f64(double __VA_ARGS__); \
   return_type prefix##i128(int128_t __VA_ARGS__); \
   return_type prefix##u128(uint128_t __VA_ARGS__); \
-  return_type prefix##f128(long double __VA_ARGS__);
+  return_type prefix##f128(float128_t __VA_ARGS__);
 
 
 #define _FN_N(return_type, prefix, ...) \
@@ -119,50 +123,50 @@ namespace lang {
   public:
     Value() : _type(_none) {}
 
-    Value(int8_t v)      : _type(_i8),   value({ ._i8 = v }) {}
-    Value(uint8_t v)     : _type(_u8),   value({ ._u8 = v }) {}
-    Value(bool v)        : _type(_bool), value({ ._bool = v }) {}
-    Value(int16_t v)     : _type(_i16),  value({ ._i16 = v }) {}
-    Value(uint16_t v)    : _type(_u16),  value({ ._u16 = v }) {}
-    Value(int32_t v)     : _type(_i32),  value({ ._i32 = v }) {}
-    Value(uint32_t v)    : _type(_u32),  value({ ._u32 = v }) {}
-    Value(float v)       : _type(_f32),  value({ ._f32 = v }) {}
-    Value(int64_t v)     : _type(_i64),  value({ ._i64 = v }) {}
-    Value(uint64_t v)    : _type(_u64),  value({ ._u64 = v }) {}
-    Value(double v)      : _type(_f64),  value({ ._f64 = v }) {}
-    Value(int128_t v)    : _type(_i128), value({ ._i128 = v }) {}
-    Value(uint128_t v)   : _type(_u128), value({ ._u128 = v }) {}
-    Value(long double v) : _type(_f128), value({ ._f128 = v }) {}
+    Value(int8_t v)      : _type(_i8),   value({ ._i8 = new int8_t(v) }) {}
+    Value(uint8_t v)     : _type(_u8),   value({ ._u8 = new uint8_t(v) }) {}
+    Value(bool v)        : _type(_bool), value({ ._bool = new bool(v) }) {}
+    Value(int16_t v)     : _type(_i16),  value({ ._i16 = new int16_t(v) }) {}
+    Value(uint16_t v)    : _type(_u16),  value({ ._u16 = new uint16_t(v) }) {}
+    Value(int32_t v)     : _type(_i32),  value({ ._i32 = new int32_t(v) }) {}
+    Value(uint32_t v)    : _type(_u32),  value({ ._u32 = new uint32_t(v) }) {}
+    Value(float v)       : _type(_f32),  value({ ._f32 = new float(v) }) {}
+    Value(int64_t v)     : _type(_i64),  value({ ._i64 = new int64_t(v) }) {}
+    Value(uint64_t v)    : _type(_u64),  value({ ._u64 = new uint64_t(v) }) {}
+    Value(double v)      : _type(_f64),  value({ ._f64 = new double(v) }) {}
+    Value(int128_t v)    : _type(_i128), value({ ._i128 = new int128_t(v) }) {}
+    Value(uint128_t v)   : _type(_u128), value({ ._u128 = new uint128_t(v) }) {}
+    Value(float128_t v) : _type(_f128), value({ ._f128 = new float128_t(v) }) {}
 
-    operator int8_t() const { return value._i8; }
-    operator uint8_t() const { return value._u8; }
-    operator bool() const { return value._bool; }
-    operator int16_t() const { return value._i16; }
-    operator uint16_t() const { return value._u16; }
-    operator int32_t() const { return value._i32; }
-    operator uint32_t() const { return value._u32; }
-    operator float() const { return value._f32; }
-    operator int64_t() const { return value._i64; }
-    operator uint64_t() const { return value._u64; }
-    operator double() const { return value._f64; }
-    operator int128_t() const { return value._i128; }
-    operator uint128_t() const { return value._u128; }
-    operator long double() const { return value._f128; }
+    operator int8_t() const { return *value._i8; }
+    operator uint8_t() const { return *value._u8; }
+    operator bool() const { return *value._bool; }
+    operator int16_t() const { return *value._i16; }
+    operator uint16_t() const { return *value._u16; }
+    operator int32_t() const { return *value._i32; }
+    operator uint32_t() const { return *value._u32; }
+    operator float() const { return *value._f32; }
+    operator int64_t() const { return *value._i64; }
+    operator uint64_t() const { return *value._u64; }
+    operator double() const { return *value._f64; }
+    operator int128_t() const { return *value._i128; }
+    operator uint128_t() const { return *value._u128; }
+    operator float128_t() const { return *value._f128; }
 
-    Value& operator=(int8_t v) { _type = _i8; value._i8 = v; return *this; }
-    Value& operator=(uint8_t v) { _type = _u8; value._u8 = v; return *this; }
-    Value& operator=(bool v) { _type = _bool; value._bool = v; return *this; }
-    Value& operator=(int16_t v) { _type = _i16; value._i16 = v; return *this; }
-    Value& operator=(uint16_t v) { _type = _u16; value._u16 = v; return *this; }
-    Value& operator=(int32_t v) { _type = _i32; value._i32 = v; return *this; }
-    Value& operator=(uint32_t v) { _type = _u32; value._u32 = v; return *this; }
-    Value& operator=(float v) { _type = _f32; value._f32 = v; return *this; }
-    Value& operator=(int64_t v) { _type = _i64; value._i64 = v; return *this; }
-    Value& operator=(uint64_t v) { _type = _u64; value._u64 = v; return *this; }
-    Value& operator=(double v) { _type = _f64; value._f64 = v; return *this; }
-    Value& operator=(int128_t v) { _type = _i128; value._i128 = v; return *this; }
-    Value& operator=(uint128_t v) { _type = _u128; value._u128 = v; return *this; }
-    Value& operator=(long double v) { _type = _f128; value._f128 = v; return *this; }
+    Value& operator=(int8_t v) { _type = _i8; *value._i8 = v; return *this; }
+    Value& operator=(uint8_t v) { _type = _u8; *value._u8 = v; return *this; }
+    Value& operator=(bool v) { _type = _bool; *value._bool = v; return *this; }
+    Value& operator=(int16_t v) { _type = _i16; *value._i16 = v; return *this; }
+    Value& operator=(uint16_t v) { _type = _u16; *value._u16 = v; return *this; }
+    Value& operator=(int32_t v) { _type = _i32; *value._i32 = v; return *this; }
+    Value& operator=(uint32_t v) { _type = _u32; *value._u32 = v; return *this; }
+    Value& operator=(float v) { _type = _f32; *value._f32 = v; return *this; }
+    Value& operator=(int64_t v) { _type = _i64; *value._i64 = v; return *this; }
+    Value& operator=(uint64_t v) { _type = _u64; *value._u64 = v; return *this; }
+    Value& operator=(double v) { _type = _f64; *value._f64 = v; return *this; }
+    Value& operator=(int128_t v) { _type = _i128; *value._i128 = v; return *this; }
+    Value& operator=(uint128_t v) { _type = _u128; *value._u128 = v; return *this; }
+    Value& operator=(float128_t v) { _type = _f128; *value._f128 = v; return *this; }
 
     // ~Value();
 
@@ -194,20 +198,20 @@ namespace lang {
     inline std::string get_value_string() const {
       switch (_type) {
         case _none: return "none";
-        case _i8: return std::to_string(value._i8);
-        case _u8: return std::to_string(value._u8);
-        case _bool: return std::to_string(value._bool);
-        case _i16: return std::to_string(value._i16);
-        case _u16: return std::to_string(value._u16);
-        case _i32: return std::to_string(value._i32);
-        case _u32: return std::to_string(value._u32);
-        case _f32: return std::to_string(value._f32);
-        case _i64: return std::to_string(value._i64);
-        case _u64: return std::to_string(value._u64);
-        case _f64: return std::to_string(value._f64);
-        case _i128: return fmt::format("{:x}", value._i128); // not sure
-        case _u128: return fmt::format("{:x}", value._u128);
-        case _f128: return std::to_string(value._f128);
+        case _i8: return std::to_string(*value._i8);
+        case _u8: return std::to_string(*value._u8);
+        case _bool: return std::to_string(*value._bool);
+        case _i16: return std::to_string(*value._i16);
+        case _u16: return std::to_string(*value._u16);
+        case _i32: return std::to_string(*value._i32);
+        case _u32: return std::to_string(*value._u32);
+        case _f32: return std::to_string(*value._f32);
+        case _i64: return std::to_string(*value._i64);
+        case _u64: return std::to_string(*value._u64);
+        case _f64: return std::to_string(*value._f64);
+        case _i128: return boost::multiprecision::to_string(*value._i128);
+        case _u128: return boost::multiprecision::to_string(*value._u128);
+        case _f128: return std::to_string(*value._f128);
         default: return "UNKNOWN";
       }
     }
@@ -240,91 +244,92 @@ namespace lang {
     
     inline int8_t as_i8_safe() const {
       assert(_type == _i8);
-      return value._i8;
+      return *value._i8;
     }
 
     inline uint8_t as_u8_safe() const {
       assert(_type == _u8);
-      return value._u8;
+      return *value._u8;
     }
 
     inline bool as_bool_safe() const {
       assert(_type == _bool);
-      return value._bool;
+      return *value._bool;
     }
 
     inline int16_t as_i16_safe() const {
       assert(_type == _i16);
-      return value._i16;
+      return *value._i16;
     }
 
     inline uint16_t as_u16_safe() const {
       assert(_type == _u16);
-      return value._u16;
+      return *value._u16;
     }
 
     inline int32_t as_i32_safe() const {
       assert(_type == _i32);
-      return value._i32;
+      return *value._i32;
     }
 
     inline uint32_t as_u32_safe() const {
       assert(_type == _u32);
-      return value._u32;
+      return *value._u32;
     }
 
     inline float as_f32_safe() const {
       assert(_type == _f32);
-      return value._f32;
+      return *value._f32;
     }
 
     inline int64_t as_i64_safe() const {
       assert(_type == _i64);
-      return value._i64;
+      return *value._i64;
     }
 
     inline uint64_t as_u64_safe() const {
       assert(_type == _u64);
-      return value._u64;
+      return *value._u64;
     }
 
     inline double as_f64_safe() const {
       assert(_type == _f64);
-      return value._f64;
+      return *value._f64;
     }
 
     inline int128_t as_i128_safe() const {
       assert(_type == _i128);
-      return value._i128;
+      return *value._i128;
     }
 
     inline uint128_t as_u128_safe() const {
       assert(_type == _u128);
-      return value._u128;
+      return *value._u128;
     }
 
-    inline long double as_f128_safe() const {
+    inline float128_t as_f128_safe() const {
       assert(_type == _f128);
-      return value._f128;
+      return *value._f128;
     }
 
   private:
     type _type;
     union {
-      int8_t _i8;
-      uint8_t _u8;
-      bool _bool;
-      int16_t _i16;
-      uint16_t _u16;
-      int32_t _i32;
-      uint32_t _u32;
-      float _f32;
-      int64_t _i64;
-      uint64_t _u64;
-      double _f64;
-      int128_t _i128;
-      uint128_t _u128;
-      long double _f128;
+      void *_ptr;
+      int8_t *_i8;
+      uint8_t *_u8;
+      bool *_bool;
+      int16_t *_i16;
+      uint16_t *_u16;
+      int32_t *_i32;
+      uint32_t *_u32;
+      float *_f32;
+      int64_t *_i64;
+      uint64_t *_u64;
+      double *_f64;
+      int128_t *_i128;
+      uint128_t *_u128;
+      float128_t *_f128;
     } value;
   };
 
@@ -350,6 +355,20 @@ namespace lang {
   public:
     VM();
     void run(const uint8_t *program, size_t size);
+    inline int8_t get_i8() { return *(int8_t *)ref(sizeof(int8_t)); }
+    inline uint8_t get_u8() { return *(uint8_t *)ref(sizeof(uint8_t)); }
+    inline bool get_bool() { return *(bool *)ref(sizeof(bool)); }
+    inline int16_t get_i16() { return *(int16_t *)ref(sizeof(int16_t)); }
+    inline uint16_t get_u16() { return *(uint16_t *)ref(sizeof(uint16_t)); }
+    inline int32_t get_i32() { return *(int32_t *)ref(sizeof(int32_t)); }
+    inline uint32_t get_u32() { return *(uint32_t *)ref(sizeof(uint32_t)); }
+    inline float get_f32() { return *(float *)ref(sizeof(float)); }
+    inline int64_t get_i64() { return *(int64_t *)ref(sizeof(int64_t)); }
+    inline uint64_t get_u64() { return *(uint64_t *)ref(sizeof(uint64_t)); }
+    inline double get_f64() { return *(double *)ref(sizeof(double)); }
+    inline int128_t get_i128() { return *(int128_t *)ref(sizeof(int128_t)); }
+    inline uint128_t get_u128() { return *(uint128_t *)ref(sizeof(uint128_t)); }
+    inline float128_t get_f128() { return *(float128_t *)ref(sizeof(float128_t)); }
 
   private:
     uint8_t stack[VM_STACK_SIZE];

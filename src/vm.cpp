@@ -32,7 +32,11 @@ void VM::run(const uint8_t *program, size_t size) {
   this->program_size = size;
   instruction = program;
   // TODO: locate start instruction and set instruction pointer
-  while (step());
+  while (step()) {
+    // usleep(10000);
+    VM_DEBUG_2("");
+    VM_DEBUG_2("");
+  }
 }
 
 void *VM::read(size_t size) {
@@ -111,8 +115,30 @@ bool VM::step() { // returns false if VM is finished
     case SETL_I64:  VM_DEBUG_2("i:SETL_I64");       { int8_t index = *(uint8_t *)read(1);  int64_t     value = *(int64_t *)read(8);      setl_i64(value, &scope, index);  break; }
     case SETL_U64:  VM_DEBUG_2("i:SETL_U64");       { int8_t index = *(uint8_t *)read(1);  uint64_t    value = *(uint64_t *)read(8);     setl_u64(value, &scope, index);  break; }
     case SETL_F64:  VM_DEBUG_2("i:SETL_F64");       { int8_t index = *(uint8_t *)read(1);  double      value = *(double *)read(8);       setl_f64(value, &scope, index);  break; }
-    case SETL_I128: VM_DEBUG_2("i:SETL_I128");      { int8_t index = *(uint8_t *)read(1);  int128_t    value = *(int128_t *)read(16);    setl_i128(value, &scope, index); break; }
-    case SETL_U128: VM_DEBUG_2("i:SETL_U128");      { int8_t index = *(uint8_t *)read(1);  uint128_t   value = *(uint128_t *)read(16);   setl_u128(value, &scope, index); break; }
+    case SETL_I128: {
+      VM_DEBUG_2("i:SETL_I128");
+      int8_t index = *(uint8_t *)read(1);
+      int128_t value;
+      std::vector<uint8_t> chunk;
+      uint8_t *raw = (uint8_t *)read(16);
+      chunk.assign(raw, raw + 16);
+      std::reverse(chunk.begin(), chunk.end());
+      boost::multiprecision::import_bits(value, chunk.begin(), chunk.end());
+      setl_i128(value, &scope, index);
+      break;
+    }
+    case SETL_U128: {
+      VM_DEBUG_2("i:SETL_U128");
+      int8_t index = *(uint8_t *)read(1);
+      uint128_t value;
+      std::vector<uint8_t> chunk;
+      uint8_t *raw = (uint8_t *)read(16);
+      chunk.assign(raw, raw + 16);
+      std::reverse(chunk.begin(), chunk.end());
+      boost::multiprecision::import_bits(value, chunk.begin(), chunk.end());
+      setl_u128(value, &scope, index);
+      break;
+    }
     case SETL_F128: VM_DEBUG_2("i:SETL_F128");      { int8_t index = *(uint8_t *)read(1);  long double value = *(long double *)read(16); setl_f128(value, &scope, index); break; }
 
     case ADD_I8:    VM_DEBUG_2("i:ADD_I8");          add_i8(); break;
@@ -293,7 +319,7 @@ void VM::push(void *value, size_t size) {
 }
 
 void *VM::pop(size_t size) {
-  VM_DEBUG_2("->pop {}", size);
+  VM_DEBUG_2("->pop {} ({})", size, stack_top - stack);
   if (stack_top == nullptr) {
     dbg(-1);
     throw std::runtime_error("pop(): stack underflow on nullptr");
@@ -349,8 +375,8 @@ void VM::popl_f32(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_f32 {}", ind
 void VM::popl_i64(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_i64 {}", index); scope->local(index, *(int64_t *)pop(sizeof(int64_t))); }
 void VM::popl_u64(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_u64 {}", index); scope->local(index, *(uint64_t *)pop(sizeof(uint64_t))); }
 void VM::popl_f64(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_f64 {}", index); scope->local(index, *(double *)pop(sizeof(double))); }
-void VM::popl_i128(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_i128 {}", index); scope->local(index, *(int128_t *)pop(sizeof(int128_t))); }
-void VM::popl_u128(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_u128 {}", index); scope->local(index, *(uint128_t *)pop(sizeof(uint128_t))); }
+void VM::popl_i128(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_i128 {}", index); int128_t value; uint8_t *chunk = (uint8_t *)pop(16); boost::multiprecision::import_bits(value, chunk, chunk + 16); scope->local(index, value); }
+void VM::popl_u128(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_u128 {}", index); uint128_t value; uint8_t *chunk = (uint8_t *)pop(16); boost::multiprecision::import_bits(value, chunk, chunk + 16); scope->local(index, value); }
 void VM::popl_f128(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_f128 {}", index); scope->local(index, *(long double *)pop(sizeof(long double))); }
 
 
@@ -366,8 +392,9 @@ void VM::pushl_f32(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_f32 {}", i
 void VM::pushl_i64(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_i64 {}", index); int64_t value = scope->local(index)->as_i64_safe(); push(&value, sizeof(value)); }
 void VM::pushl_u64(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_u64 {}", index); uint64_t value = scope->local(index)->as_u64_safe(); push(&value, sizeof(value)); }
 void VM::pushl_f64(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_f64 {}", index); double value = scope->local(index)->as_f64_safe(); push(&value, sizeof(value)); }
-void VM::pushl_i128(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_i128 {}", index); int128_t value = scope->local(index)->as_i128_safe(); push(&value, sizeof(value)); }
-void VM::pushl_u128(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_u128 {}", index); uint128_t value = scope->local(index)->as_u128_safe(); push(&value, sizeof(value)); }
+void VM::pushl_i128(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_i128 {}", index); int128_t value = scope->local(index)->as_i128_safe(); std::vector<uint8_t> bytes; boost::multiprecision::export_bits(value, std::back_inserter(bytes), 8); push(bytes.data(), 16); }
+void VM::pushl_u128(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_u128 {}", index); uint128_t value = scope->local(index)->as_u128_safe(); std::vector<uint8_t> bytes; boost::multiprecision::export_bits(value, std::back_inserter(bytes), 8); push(bytes.data(), 16); }
+// void VM::pushl_u128(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_u128 {}", index); uint128_t value = scope->local(index)->as_u128_safe(); push(&value, 16); }
 void VM::pushl_f128(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_f128 {}", index); long double value = scope->local(index)->as_f128_safe(); push(&value, sizeof(value)); }
 
 
@@ -383,8 +410,8 @@ void VM::setl_f32(float value, VMScope *scope, uint8_t index)        { VM_DEBUG_
 void VM::setl_i64(int64_t value, VMScope *scope, uint8_t index)      { VM_DEBUG_2("setl_i64 #{} = {}", index, value);  *scope->local(index) = value; }
 void VM::setl_u64(uint64_t value, VMScope *scope, uint8_t index)     { VM_DEBUG_2("setl_u64 #{} = {}", index, value);  *scope->local(index) = value; }
 void VM::setl_f64(double value, VMScope *scope, uint8_t index)       { VM_DEBUG_2("setl_f64 #{} = {}", index, value);  *scope->local(index) = value; }
-void VM::setl_i128(int128_t value, VMScope *scope, uint8_t index)    { VM_DEBUG_2("setl_i128 #{} = {}", index, value); *scope->local(index) = value; }
-void VM::setl_u128(uint128_t value, VMScope *scope, uint8_t index)   { VM_DEBUG_2("setl_u128 #{} = {}", index, value); *scope->local(index) = value; }
+void VM::setl_i128(int128_t value, VMScope *scope, uint8_t index)    { VM_DEBUG_2("setl_i128 #{} = {}", index, boost::multiprecision::to_string(value)); scope->local(index, value); }
+void VM::setl_u128(uint128_t value, VMScope *scope, uint8_t index)   { VM_DEBUG_2("setl_u128 #{} = {}", index, boost::multiprecision::to_string(value)); scope->local(index, value); }
 void VM::setl_f128(long double value, VMScope *scope, uint8_t index) { VM_DEBUG_2("setl_f128 #{} = {}", index, value); *scope->local(index) = value; }
 
 
@@ -462,14 +489,14 @@ void VM::add_f64() {
 void VM::add_i128() {
   int128_t *a = (int128_t *)ref(sizeof(int128_t) + sizeof(int128_t));
   int128_t *b = (int128_t *)ref(sizeof(int128_t));
-  VM_DEBUG_2("add_i128: {} + {} = {}", *a, *b, *a + *b);
+  VM_DEBUG_2("add_i128: {} + {} = {}", boost::multiprecision::to_string(*a), boost::multiprecision::to_string(*b), boost::multiprecision::to_string(*a + *b));
   *b = *a + *b;
 }
 
 void VM::add_u128() {
   uint128_t *a = (uint128_t *)ref(sizeof(uint128_t) + sizeof(uint128_t));
   uint128_t *b = (uint128_t *)ref(sizeof(uint128_t));
-  VM_DEBUG_2("add_u128: {} + {} = {}", *a, *b, *a + *b);
+  VM_DEBUG_2("add_u128: {} + {} = {}", boost::multiprecision::to_string(*a), boost::multiprecision::to_string(*b), boost::multiprecision::to_string(*a + *b));
   *b = *a + *b;
 }
 
@@ -1200,7 +1227,7 @@ void VM::jmp(size_t offset) {
 void VM::ret() { VM_DEBUG_1("ret: not implemented"); dbg(0); }
 
 void VM::dbg(int8_t i) {
-  VM_DEBUG_1("dbg: {}", i);
+  VM_DEBUG_1("dbg: {} @ {}", i, (size_t)instruction - (size_t)program);
   // Dump stack
   VM_DEBUG_1("\t...\tstack (stack = {:#08x}, stack_top = {:#08x}, delta(stack -> top) = {}):",
     (size_t) &stack, (size_t) stack_top,

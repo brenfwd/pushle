@@ -31,8 +31,7 @@
   prefix##I32, \
   prefix##F32, \
   prefix##I64, \
-  prefix##F64, \
-  prefix##I128
+  prefix##F64
 
 #define _OP_S(prefix) \
   prefix##1, \
@@ -42,6 +41,21 @@
   prefix##16
 
 namespace lang {
+  enum type {
+    _none,
+    _i8,
+    _u8,
+    _bool,
+    _i16,
+    _u16,
+    _i32,
+    _u32,
+    _f32,
+    _i64,
+    _u64,
+    _f64,
+  };
+
   enum Op {
     _OP_T(PUSH_),
     _OP_T(POPL_),

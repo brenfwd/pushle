@@ -1,0 +1,108 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Langasm",
+	"patterns": [
+		{ "include": "#keywords_op_t" },
+		{ "include": "#keywords_op_n" },
+		{ "include": "#keywords_op_i" },
+		{ "include": "#keywords_op_s" },
+		{ "include": "#keywords" },
+		{ "include": "#labels" },
+		{ "include": "#strings" },
+		{ "include": "#types" },
+		{ "include": "#numbers" },
+		{ "include": "#comments" }
+	],
+	"repository": {
+		"types": {
+			"patterns": [
+				{
+					"name": "entity.name.type",
+					"match": "\\b(?:i8|u8|bool|i16|u16|i32|u32|f32|i64|u64|f64)\\b"
+				}
+			]
+		},
+		"keywords_op_t": {
+			"patterns": [
+				{
+					"name": "keyword.other.langasm",
+					"match": "\\b((push_|popl_|pushl_|setl_)(i8|u8|bool|i16|u16|i32|u32|f32|i64|u64|f64))\\b"
+				}
+			]
+		},
+		"keywords_op_n": {
+			"patterns": [
+				{
+					"name": "keyword.other.langasm",
+					"match": "\\b((add_|sub_|mul_|div_|rem_|dec_|inc_|cmp_)(i8|u8|i16|u18|i32|u32|f32|i64|u64|f64))\\b"
+				}
+			]
+		},
+		"keywords_op_i": {
+			"patterns": [
+				{
+					"name": "keyword.other.langasm",
+					"match": "\\b((abs_)(i8|i16|i32|f32|i64|f64))\\b"
+				}
+			]
+		},
+		"keywords_op_s": {
+			"patterns": [
+				{
+					"name": "keyword.other.langasm",
+					"match": "\\b((dup|swap|pop)(1|2|4|8|16))\\b"
+				}
+			]
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.other.langasm",
+					"match": "\\b(dupg|swapg|popg|jz|jnz|jl|jg|jnl|jng|jmp|ret|dbg|sig)\\b"
+				}
+			]
+		},
+		"labels": {
+			"patterns": [
+				{
+					"name": "entity.name.section.langasm",
+					"match": "(@(?:[a-zA-Z_][a-zA-Z0-9_]*))\\b"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.langasm",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.langasm",
+					"match": "\\\\."
+				}
+			]
+		},
+		"numbers": {
+			"patterns": [
+				{
+					"name": "constant.numeric.langasm",
+					"match": "\\b(?:0[xX][0-9a-fA-F]+|[0-9]+(?:\\.[0-9]+)?)\\b"
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.block.langasm",
+					"begin": "/\\*",
+					"end": "\\*/"
+				},
+				{
+					"name": "comment.line.double-slash.langasm",
+					"begin": "(//|#)\\s*.*",
+					"end": "$"
+				}
+			]
+		}
+	},
+	"scopeName": "source.lsm"
+}

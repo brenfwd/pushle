@@ -1,0 +1,28 @@
+push_u8 0
+setl_u64 0 0
+setl_u64 1 1
+setl_u64 2 0
+
+@loop_start
+  push_u8 79
+  cmp_u8
+  pop1
+  jnl @loop_end
+  inc_u8
+  
+  pushl_u64 0
+  pushl_u64 1
+  add_u64
+  popl_u64 2
+  pop8
+  
+  pushl_u64 1
+  popl_u64 0
+  pushl_u64 2
+  popl_u64 1
+  jmp @loop_start
+@loop_end
+
+pop1
+pushl_u64 2
+ret

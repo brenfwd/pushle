@@ -1,6 +1,8 @@
 #include <fmt/core.h>
 #include <cstdint>
 
+#include <fstream>
+
 #include "ops.h"
 #include "vm.h"
 
@@ -38,13 +40,13 @@ const uint8_t program[] = {
   // local b: u64 = 1
   lang::Op::SETL_U64,   1,    1,0,0,0,0,0,0,0,
   // local temp: u64 = 0
-  lang::Op::SETL_U8,    2,    0,
+  lang::Op::SETL_U64,   2,    0,0,0,0,0,0,0,0,
   // start loop
   // if (i >= (80-1)) goto end
   lang::Op::PUSH_U8,    80-1,
   lang::Op::CMP_U8,
   lang::Op::POP1,
-  lang::Op::JNL,        64,0,0,0,0,0,0,0,
+  lang::Op::JNL,        71,0,0,0,0,0,0,0,
   // i++
   lang::Op::INC_U8,
   // temp = a + b
@@ -60,7 +62,7 @@ const uint8_t program[] = {
   lang::Op::PUSHL_U64,  2, // push from temp
   lang::Op::POPL_U64,   1, // pop to b
   // goto start
-  lang::Op::JMP,        25,0,0,0,0,0,0,0,
+  lang::Op::JMP,        32,0,0,0,0,0,0,0,
   // end
   lang::Op::POP1,
   lang::Op::PUSHL_U64,  2, // push from temp
@@ -139,12 +141,23 @@ decl_subroutine "fib" type::u8
 end_subroutine
 */
 
-int main() {
-  for (auto op : program)
-    fmt::print("{:02x} ", op);
-  fmt::print("\nExecuting program...\n");
+int main(int argc, char** argv) {
+  if (argc != 2) {
+    fmt::print("Usage: {} <file>\n", argv[0]);
+    return 1;
+  }
+  std::ifstream ifs(argv[1]);
+  if (!ifs) {
+    fmt::print("Failed to open file: {}\n", argv[1]);
+    return 1;
+  }
+  std::vector<uint8_t> program;
+  uint8_t byte;
+  while (ifs.read(reinterpret_cast<char*>(&byte), sizeof(byte))) {
+    program.push_back(byte);
+  }
   lang::VM vm;
-  vm.run(program, sizeof(program));
+  vm.run(program.data(), program.size());
   fmt::print("Result as u64: {}\n", vm.get_u64());
   return 0;
 }

@@ -13,10 +13,6 @@ VM::VM() {
   program = nullptr;
   program_size = 0;
   instruction = nullptr;
-  // for (size_t i = 0; i < VM_CALL_STACK_SIZE; i++)
-  //   call_stack[i] = nullptr;
-  // call_stack_top = call_stack;
-  // call_stack_next = call_stack;
 
   reg_cmp = 0;
   reg_err = 0;
@@ -340,480 +336,204 @@ void VM::setl_f64(double value, VMScope *scope, uint8_t index)       { VM_DEBUG_
 
 
 
-void VM::add_i8() {
-  int8_t *a = (int8_t *)ref(sizeof(int8_t) + sizeof(int8_t));
-  int8_t *b = (int8_t *)ref(sizeof(int8_t));
-  VM_DEBUG_2("add_i8: {} + {} = {}", *a, *b, *a + *b);
-  *b = *a + *b;
-}
-
-void VM::add_u8() {
-  uint8_t *a = (uint8_t *)ref(sizeof(uint8_t) + sizeof(uint8_t));
-  uint8_t *b = (uint8_t *)ref(sizeof(uint8_t));
-  VM_DEBUG_2("add_u8: {} + {} = {}", *a, *b, *a + *b);
-  *b = *a + *b;
-}
-
-void VM::add_i16() {
-  int16_t *a = (int16_t *)ref(sizeof(int16_t) + sizeof(int16_t));
-  int16_t *b = (int16_t *)ref(sizeof(int16_t));
-  VM_DEBUG_2("add_i16: {} + {} = {}", *a, *b, *a + *b);
-  *b = *a + *b;
-}
-
-void VM::add_u16() {
-  uint16_t *a = (uint16_t *)ref(sizeof(uint16_t) + sizeof(uint16_t));
-  uint16_t *b = (uint16_t *)ref(sizeof(uint16_t));
-  VM_DEBUG_2("add_u16: {} + {} = {}", *a, *b, *a + *b);
-  *b = *a + *b;
-}
-
-void VM::add_i32() {
-  int32_t *a = (int32_t *)ref(sizeof(int32_t) + sizeof(int32_t));
-  int32_t *b = (int32_t *)ref(sizeof(int32_t));
-  VM_DEBUG_2("add_i32: {} + {} = {}", *a, *b, *a + *b);
-  *b = *a + *b;
-}
-
-void VM::add_u32() {
-  uint32_t *a = (uint32_t *)ref(sizeof(uint32_t) + sizeof(uint32_t));
-  uint32_t *b = (uint32_t *)ref(sizeof(uint32_t));
-  VM_DEBUG_2("add_u32: {} + {} = {}", *a, *b, *a + *b);
-  *b = *a + *b;
-}
-
-void VM::add_f32() {
-  float *a = (float *)ref(sizeof(float) + sizeof(float));
-  float *b = (float *)ref(sizeof(float));
-  VM_DEBUG_2("add_f32: {} + {} = {}", *a, *b, *a + *b);
-  *b = *a + *b;
-}
-
-void VM::add_i64() {
-  int64_t *a = (int64_t *)ref(sizeof(int64_t) + sizeof(int64_t));
-  int64_t *b = (int64_t *)ref(sizeof(int64_t));
-  VM_DEBUG_2("add_i64: {} + {} = {}", *a, *b, *a + *b);
-  *b = *a + *b;
-}
-
-void VM::add_u64() {
-  uint64_t *a = (uint64_t *)ref(sizeof(uint64_t) + sizeof(uint64_t));
-  uint64_t *b = (uint64_t *)ref(sizeof(uint64_t));
-  VM_DEBUG_2("add_u64: {} + {} = {}", *a, *b, *a + *b);
-  *b = *a + *b;
-}
-
-void VM::add_f64() {
-  double *a = (double *)ref(sizeof(double) + sizeof(double));
-  double *b = (double *)ref(sizeof(double));
-  VM_DEBUG_2("add_f64: {} + {} = {}", *a, *b, *a + *b);
-  *b = *a + *b;
-}
-
-
-
-
-void VM::sub_i8() {
-  int8_t *a = (int8_t *)ref(sizeof(int8_t) + sizeof(int8_t));
-  int8_t *b = (int8_t *)ref(sizeof(int8_t));
-  *b = *a - *b;
-}
-
-void VM::sub_u8() {
-  uint8_t *a = (uint8_t *)ref(sizeof(uint8_t) + sizeof(uint8_t));
-  uint8_t *b = (uint8_t *)ref(sizeof(uint8_t));
-  *b = *a - *b;
-}
-
-void VM::sub_i16() {
-  int16_t *a = (int16_t *)ref(sizeof(int16_t) + sizeof(int16_t));
-  int16_t *b = (int16_t *)ref(sizeof(int16_t));
-  *b = *a - *b;
-}
-
-void VM::sub_u16() {
-  uint16_t *a = (uint16_t *)ref(sizeof(uint16_t) + sizeof(uint16_t));
-  uint16_t *b = (uint16_t *)ref(sizeof(uint16_t));
-  *b = *a - *b;
-}
-
-void VM::sub_i32() {
-  int32_t *a = (int32_t *)ref(sizeof(int32_t) + sizeof(int32_t));
-  int32_t *b = (int32_t *)ref(sizeof(int32_t));
-  *b = *a - *b;
-}
-
-void VM::sub_u32() {
-  uint32_t *a = (uint32_t *)ref(sizeof(uint32_t) + sizeof(uint32_t));
-  uint32_t *b = (uint32_t *)ref(sizeof(uint32_t));
-  *b = *a - *b;
-}
-
-void VM::sub_f32() {
-  float *a = (float *)ref(sizeof(float) + sizeof(float));
-  float *b = (float *)ref(sizeof(float));
-  *b = *a - *b;
-}
-
-void VM::sub_i64() {
-  int64_t *a = (int64_t *)ref(sizeof(int64_t) + sizeof(int64_t));
-  int64_t *b = (int64_t *)ref(sizeof(int64_t));
-  *b = *a - *b;
-}
-
-void VM::sub_u64() {
-  uint64_t *a = (uint64_t *)ref(sizeof(uint64_t) + sizeof(uint64_t));
-  uint64_t *b = (uint64_t *)ref(sizeof(uint64_t));
-  *b = *a - *b;
-}
-
-void VM::sub_f64() {
-  double *a = (double *)ref(sizeof(double) + sizeof(double));
-  double *b = (double *)ref(sizeof(double));
-  *b = *a - *b;
-}
-
-
-
-void VM::mul_i8() {
-  int8_t *a = (int8_t *)ref(sizeof(int8_t) + sizeof(int8_t));
-  int8_t *b = (int8_t *)ref(sizeof(int8_t));
-  *b = *a * *b;
-}
-
-void VM::mul_u8() {
-  uint8_t *a = (uint8_t *)ref(sizeof(uint8_t) + sizeof(uint8_t));
-  uint8_t *b = (uint8_t *)ref(sizeof(uint8_t));
-  *b = *a * *b;
-}
-
-void VM::mul_i16() {
-  int16_t *a = (int16_t *)ref(sizeof(int16_t) + sizeof(int16_t));
-  int16_t *b = (int16_t *)ref(sizeof(int16_t));
-  *b = *a * *b;
-}
-
-void VM::mul_u16() {
-  uint16_t *a = (uint16_t *)ref(sizeof(uint16_t) + sizeof(uint16_t));
-  uint16_t *b = (uint16_t *)ref(sizeof(uint16_t));
-  *b = *a * *b;
-}
-
-void VM::mul_i32() {
-  int32_t *a = (int32_t *)ref(sizeof(int32_t) + sizeof(int32_t));
-  int32_t *b = (int32_t *)ref(sizeof(int32_t));
-  *b = *a * *b;
-}
-
-void VM::mul_u32() {
-  uint32_t *a = (uint32_t *)ref(sizeof(uint32_t) + sizeof(uint32_t));
-  uint32_t *b = (uint32_t *)ref(sizeof(uint32_t));
-  *b = *a * *b;
-}
-
-void VM::mul_f32() {
-  float *a = (float *)ref(sizeof(float) + sizeof(float));
-  float *b = (float *)ref(sizeof(float));
-  *b = *a * *b;
-}
-
-void VM::mul_i64() {
-  int64_t *a = (int64_t *)ref(sizeof(int64_t) + sizeof(int64_t));
-  int64_t *b = (int64_t *)ref(sizeof(int64_t));
-  *b = *a * *b;
-}
-
-void VM::mul_u64() {
-  uint64_t *a = (uint64_t *)ref(sizeof(uint64_t) + sizeof(uint64_t));
-  uint64_t *b = (uint64_t *)ref(sizeof(uint64_t));
-  *b = *a * *b;
-}
-
-void VM::mul_f64() {
-  double *a = (double *)ref(sizeof(double) + sizeof(double));
-  double *b = (double *)ref(sizeof(double));
-  *b = *a * *b;
-}
-
-
-
-void VM::div_i8() {
-  int8_t *a = (int8_t *)ref(sizeof(int8_t) + sizeof(int8_t));
-  int8_t *b = (int8_t *)ref(sizeof(int8_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a / *b;
-}
-
-void VM::div_u8() {
-  uint8_t *a = (uint8_t *)ref(sizeof(uint8_t) + sizeof(uint8_t));
-  uint8_t *b = (uint8_t *)ref(sizeof(uint8_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a / *b;
-}
-
-void VM::div_i16() {
-  int16_t *a = (int16_t *)ref(sizeof(int16_t) + sizeof(int16_t));
-  int16_t *b = (int16_t *)ref(sizeof(int16_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a / *b;
-}
-
-void VM::div_u16() {
-  uint16_t *a = (uint16_t *)ref(sizeof(uint16_t) + sizeof(uint16_t));
-  uint16_t *b = (uint16_t *)ref(sizeof(uint16_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a / *b;
-}
-
-void VM::div_i32() {
-  int32_t *a = (int32_t *)ref(sizeof(int32_t) + sizeof(int32_t));
-  int32_t *b = (int32_t *)ref(sizeof(int32_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a / *b;
-}
-
-void VM::div_u32() {
-  uint32_t *a = (uint32_t *)ref(sizeof(uint32_t) + sizeof(uint32_t));
-  uint32_t *b = (uint32_t *)ref(sizeof(uint32_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a / *b;
-}
-
-void VM::div_f32() {
-  float *a = (float *)ref(sizeof(float) + sizeof(float));
-  float *b = (float *)ref(sizeof(float));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a / *b;
-}
-
-void VM::div_i64() {
-  int64_t *a = (int64_t *)ref(sizeof(int64_t) + sizeof(int64_t));
-  int64_t *b = (int64_t *)ref(sizeof(int64_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a / *b;
-}
-
-void VM::div_u64() {
-  uint64_t *a = (uint64_t *)ref(sizeof(uint64_t) + sizeof(uint64_t));
-  uint64_t *b = (uint64_t *)ref(sizeof(uint64_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a / *b;
-}
-
-void VM::div_f64() {
-  double *a = (double *)ref(sizeof(double) + sizeof(double));
-  double *b = (double *)ref(sizeof(double));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a / *b;
-}
-
-
-
-void VM::rem_i8() {
-  int8_t *a = (int8_t *)ref(sizeof(int8_t) + sizeof(int8_t));
-  int8_t *b = (int8_t *)ref(sizeof(int8_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a % *b;
-}
-
-void VM::rem_u8() {
-  uint8_t *a = (uint8_t *)ref(sizeof(uint8_t) + sizeof(uint8_t));
-  uint8_t *b = (uint8_t *)ref(sizeof(uint8_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a % *b;
-}
-
-void VM::rem_i16() {
-  int16_t *a = (int16_t *)ref(sizeof(int16_t) + sizeof(int16_t));
-  int16_t *b = (int16_t *)ref(sizeof(int16_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a % *b;
-}
-
-void VM::rem_u16() {
-  uint16_t *a = (uint16_t *)ref(sizeof(uint16_t) + sizeof(uint16_t));
-  uint16_t *b = (uint16_t *)ref(sizeof(uint16_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a % *b;
-}
-
-void VM::rem_i32() {
-  int32_t *a = (int32_t *)ref(sizeof(int32_t) + sizeof(int32_t));
-  int32_t *b = (int32_t *)ref(sizeof(int32_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a % *b;
-}
-
-void VM::rem_u32() {
-  uint32_t *a = (uint32_t *)ref(sizeof(uint32_t) + sizeof(uint32_t));
-  uint32_t *b = (uint32_t *)ref(sizeof(uint32_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a % *b;
-}
-
-void VM::rem_f32() {
-  float *a = (float *)ref(sizeof(float) + sizeof(float));
-  float *b = (float *)ref(sizeof(float));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = fmodf32(*a, *b);
-}
-
-void VM::rem_i64() {
-  int64_t *a = (int64_t *)ref(sizeof(int64_t) + sizeof(int64_t));
-  int64_t *b = (int64_t *)ref(sizeof(int64_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a % *b;
-}
-
-void VM::rem_u64() {
-  uint64_t *a = (uint64_t *)ref(sizeof(uint64_t) + sizeof(uint64_t));
-  uint64_t *b = (uint64_t *)ref(sizeof(uint64_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a % *b;
-}
-
-void VM::rem_f64() {
-  double *a = (double *)ref(sizeof(double) + sizeof(double));
-  double *b = (double *)ref(sizeof(double));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = fmodf64(*a, *b);
-}
-
-
-void VM::abs_i8() {
-  int8_t *a = (int8_t *)ref(sizeof(int8_t));
-  *a = *a > 0 ? *a : -*a;
-}
-
-void VM::abs_i16() {
-  int16_t *a = (int16_t *)ref(sizeof(int16_t));
-  *a = *a > 0 ? *a : -*a;
-}
-
-void VM::abs_i32() {
-  int32_t *a = (int32_t *)ref(sizeof(int32_t));
-  *a = *a > 0 ? *a : -*a;
-}
-
-void VM::abs_f32() {
-  float *a = (float *)ref(sizeof(float));
-  *a = fabsf32(*a);
-}
-
-void VM::abs_i64() {
-  int64_t *a = (int64_t *)ref(sizeof(int64_t));
-  *a = *a > 0 ? *a : -*a;
-}
-
-void VM::abs_f64() {
-  double *a = (double *)ref(sizeof(double));
-  *a = fabsf64(*a);
-}
-
-
-
-void VM::dec_i8() {
-  int8_t *a = (int8_t *)ref(sizeof(int8_t));
-  *a = *a - 1;
-}
-
-void VM::dec_u8() {
-  uint8_t *a = (uint8_t *)ref(sizeof(uint8_t));
-  *a = *a - 1;
-}
-
-void VM::dec_i16() {
-  int16_t *a = (int16_t *)ref(sizeof(int16_t));
-  *a = *a - 1;
-}
-
-void VM::dec_u16() {
-  uint16_t *a = (uint16_t *)ref(sizeof(uint16_t));
-  *a = *a - 1;
-}
-
-void VM::dec_i32() {
-  int32_t *a = (int32_t *)ref(sizeof(int32_t));
-  *a = *a - 1;
-}
-
-void VM::dec_u32() {
-  uint32_t *a = (uint32_t *)ref(sizeof(uint32_t));
-  *a = *a - 1;
-}
-
-void VM::dec_f32() {
-  float *a = (float *)ref(sizeof(float));
-  *a = *a - 1;
-}
-
-void VM::dec_i64() {
-  int64_t *a = (int64_t *)ref(sizeof(int64_t));
-  *a = *a - 1;
-}
-
-void VM::dec_u64() {
-  uint64_t *a = (uint64_t *)ref(sizeof(uint64_t));
-  *a = *a - 1;
-}
-
-void VM::dec_f64() {
-  double *a = (double *)ref(sizeof(double));
-  *a = *a - 1;
-}
-
-
-
-void VM::inc_i8() {
-  int8_t *a = (int8_t *)ref(sizeof(int8_t));
-  *a = *a + 1;
-}
-
-void VM::inc_u8() {
-  uint8_t *a = (uint8_t *)ref(sizeof(uint8_t));
-  *a = *a + 1;
-}
-
-void VM::inc_i16() {
-  int16_t *a = (int16_t *)ref(sizeof(int16_t));
-  *a = *a + 1;
-}
-
-void VM::inc_u16() {
-  uint16_t *a = (uint16_t *)ref(sizeof(uint16_t));
-  *a = *a + 1;
-}
-
-void VM::inc_i32() {
-  int32_t *a = (int32_t *)ref(sizeof(int32_t));
-  *a = *a + 1;
-}
-
-void VM::inc_u32() {
-  uint32_t *a = (uint32_t *)ref(sizeof(uint32_t));
-  *a = *a + 1;
-}
-
-void VM::inc_f32() {
-  float *a = (float *)ref(sizeof(float));
-  *a = *a + 1;
-}
-
-void VM::inc_i64() {
-  int64_t *a = (int64_t *)ref(sizeof(int64_t));
-  *a = *a + 1;
-}
-
-void VM::inc_u64() {
-  uint64_t *a = (uint64_t *)ref(sizeof(uint64_t));
-  *a = *a + 1;
-}
-
-void VM::inc_f64() {
-  double *a = (double *)ref(sizeof(double));
-  *a = *a + 1;
-}
-
+#define VM_IMPL_ADD(type, native_type) \
+  void VM::add_##type() { \
+    native_type *a = (native_type *)ref(sizeof(native_type) + sizeof(native_type)); \
+    native_type *b = (native_type *)ref(sizeof(native_type)); \
+    VM_DEBUG_2("add_##type {} + {} = {}", *a, *b, *a + *b); \
+    *b = *a + *b; \
+  }
+
+VM_IMPL_ADD(i8, int8_t)
+VM_IMPL_ADD(u8, uint8_t)
+VM_IMPL_ADD(i16, int16_t)
+VM_IMPL_ADD(u16, uint16_t)
+VM_IMPL_ADD(i32, int32_t)
+VM_IMPL_ADD(u32, uint32_t)
+VM_IMPL_ADD(f32, float)
+VM_IMPL_ADD(i64, int64_t)
+VM_IMPL_ADD(u64, uint64_t)
+VM_IMPL_ADD(f64, double)
+
+#undef VM_IMPL_ADD
+
+
+
+#define VM_IMPL_SUB(type, native_type) \
+  void VM::sub_##type() { \
+    native_type *a = (native_type *)ref(sizeof(native_type) + sizeof(native_type)); \
+    native_type *b = (native_type *)ref(sizeof(native_type)); \
+    VM_DEBUG_2("sub_##type {} - {} = {}", *a, *b, *a - *b); \
+    *b = *a - *b; \
+  }
+
+VM_IMPL_SUB(i8, int8_t)
+VM_IMPL_SUB(u8, uint8_t)
+VM_IMPL_SUB(i16, int16_t)
+VM_IMPL_SUB(u16, uint16_t)
+VM_IMPL_SUB(i32, int32_t)
+VM_IMPL_SUB(u32, uint32_t)
+VM_IMPL_SUB(f32, float)
+VM_IMPL_SUB(i64, int64_t)
+VM_IMPL_SUB(u64, uint64_t)
+VM_IMPL_SUB(f64, double)
+
+#undef VM_IMPL_SUB
+
+
+
+#define VM_IMPL_MUL(type, native_type) \
+  void VM::mul_##type() { \
+    native_type *a = (native_type *)ref(sizeof(native_type) + sizeof(native_type)); \
+    native_type *b = (native_type *)ref(sizeof(native_type)); \
+    VM_DEBUG_2("mul_##type {} * {} = {}", *a, *b, *a * *b); \
+    *b = *a * *b; \
+  }
+
+VM_IMPL_MUL(i8, int8_t)
+VM_IMPL_MUL(u8, uint8_t)
+VM_IMPL_MUL(i16, int16_t)
+VM_IMPL_MUL(u16, uint16_t)
+VM_IMPL_MUL(i32, int32_t)
+VM_IMPL_MUL(u32, uint32_t)
+VM_IMPL_MUL(f32, float)
+VM_IMPL_MUL(i64, int64_t)
+VM_IMPL_MUL(u64, uint64_t)
+VM_IMPL_MUL(f64, double)
+
+#undef VM_IMPL_MUL
+
+
+
+#define VM_IMPL_DIV(type, native_type) \
+  void VM::div_##type() { \
+    native_type *a = (native_type *)ref(sizeof(native_type) + sizeof(native_type)); \
+    native_type *b = (native_type *)ref(sizeof(native_type)); \
+    if (*b == 0) { \
+      VM_DEBUG_2("div_##type {} / 0 = undefined", *a); \
+      reg_err = 1; \
+    } else { \
+      VM_DEBUG_2("div_##type {} / {} = {}", *a, *b, *a / *b); \
+      *b = *a / *b; \
+    } \
+  }
+
+VM_IMPL_DIV(i8, int8_t)
+VM_IMPL_DIV(u8, uint8_t)
+VM_IMPL_DIV(i16, int16_t)
+VM_IMPL_DIV(u16, uint16_t)
+VM_IMPL_DIV(i32, int32_t)
+VM_IMPL_DIV(u32, uint32_t)
+VM_IMPL_DIV(f32, float)
+VM_IMPL_DIV(i64, int64_t)
+VM_IMPL_DIV(u64, uint64_t)
+VM_IMPL_DIV(f64, double)
+
+#undef VM_IMPL_DIV
+
+
+
+#define VM_IMPL_REM(type, native_type) \
+  void VM::rem_##type() { \
+    native_type *a = (native_type *)ref(sizeof(native_type) + sizeof(native_type)); \
+    native_type *b = (native_type *)ref(sizeof(native_type)); \
+    if (*b == 0) { \
+      VM_DEBUG_2("rem_##type {} % 0 = undefined", *a); \
+      reg_err = 1; \
+    }  else { \
+      VM_DEBUG_2("rem_##type {} % {} = {}", *a, *b, *a % *b); \
+      *b = *a % *b; \
+    } \
+  }
+
+#define VM_IMPL_REM_FLOAT(type, native_type, fmodfn) \
+  void VM::rem_##type() { \
+    native_type *a = (native_type *)ref(sizeof(native_type) + sizeof(native_type)); \
+    native_type *b = (native_type *)ref(sizeof(native_type)); \
+    if (*b == 0.0) { \
+      VM_DEBUG_2("rem_##type {} % 0.0 = undefined", *a); \
+      reg_err = 1; \
+    } else { \
+      VM_DEBUG_2("rem_##type {} % {} = {}", *a, *b, fmodfn(*a, *b)); \
+      *b = fmodfn(*a, *b); \
+    } \
+  }
+
+VM_IMPL_REM(i8, int8_t)
+VM_IMPL_REM(u8, uint8_t)
+VM_IMPL_REM(i16, int16_t)
+VM_IMPL_REM(u16, uint16_t)
+VM_IMPL_REM(i32, int32_t)
+VM_IMPL_REM(u32, uint32_t)
+VM_IMPL_REM_FLOAT(f32, float, fmodf32)
+VM_IMPL_REM(i64, int64_t)
+VM_IMPL_REM(u64, uint64_t)
+VM_IMPL_REM_FLOAT(f64, double, fmodf64)
+
+#undef VM_IMPL_REM
+#undef VM_IMPL_REM_FLOAT
+
+
+
+#define VM_IMPL_ABS(type, native_type) \
+  void VM::abs_##type() { \
+    native_type *a = (native_type *)ref(sizeof(native_type)); \
+    VM_DEBUG_2("abs_##type {} = {}", *a, (*a > 0) ? *a : -*a); \
+    *a = (*a > 0) ? *a : -*a; \
+  }
+
+VM_IMPL_ABS(i8, int8_t)
+VM_IMPL_ABS(i16, int16_t)
+VM_IMPL_ABS(i32, int32_t)
+VM_IMPL_ABS(f32, float)
+VM_IMPL_ABS(i64, int64_t)
+VM_IMPL_ABS(f64, double)
+
+#undef VM_IMPL_ABS
+
+
+
+#define VM_IMPL_DEC(type, native_type) \
+  void VM::dec_##type() { \
+    native_type *a = (native_type *)ref(sizeof(native_type)); \
+    VM_DEBUG_2("dec_##type {} = {}", *a, *a - 1); \
+    *a = *a - 1; \
+  }
+
+VM_IMPL_DEC(i8, int8_t)
+VM_IMPL_DEC(u8, uint8_t)
+VM_IMPL_DEC(i16, int16_t)
+VM_IMPL_DEC(u16, uint16_t)
+VM_IMPL_DEC(i32, int32_t)
+VM_IMPL_DEC(u32, uint32_t)
+VM_IMPL_DEC(f32, float)
+VM_IMPL_DEC(i64, int64_t)
+VM_IMPL_DEC(u64, uint64_t)
+VM_IMPL_DEC(f64, double)
+
+#undef VM_IMPL_DEC
+
+
+
+#define VM_IMPL_INC(type, native_type) \
+  void VM::inc_##type() { \
+    native_type *a = (native_type *)ref(sizeof(native_type)); \
+    VM_DEBUG_2("inc_##type {} = {}", *a, *a + 1); \
+    *a = *a + 1; \
+  }
+
+VM_IMPL_INC(i8, int8_t)
+VM_IMPL_INC(u8, uint8_t)
+VM_IMPL_INC(i16, int16_t)
+VM_IMPL_INC(u16, uint16_t)
+VM_IMPL_INC(i32, int32_t)
+VM_IMPL_INC(u32, uint32_t)
+VM_IMPL_INC(f32, float)
+VM_IMPL_INC(i64, int64_t)
+VM_IMPL_INC(u64, uint64_t)
+VM_IMPL_INC(f64, double)
+
+#undef VM_IMPL_INC
 
 
 
@@ -857,85 +577,28 @@ void VM::pop4() { popg(4); }
 void VM::pop8() { popg(8); }
 
 
-void VM::cmp_u8() {
-  uint8_t *a = (uint8_t *)ref(sizeof(uint8_t) + sizeof(uint8_t));
-  uint8_t *b = (uint8_t *)ref(sizeof(uint8_t));
-  if (*a == *b) { reg_cmp = 0; return; }
-  if (*a < *b) { reg_cmp = -1; return; }
-  reg_cmp = 1;
-}
 
-void VM::cmp_i8() {
-  int8_t *a = (int8_t *)ref(sizeof(int8_t) + sizeof(int8_t));
-  int8_t *b = (int8_t *)ref(sizeof(int8_t));
-  if (*a == *b) { reg_cmp = 0; return; }
-  if (*a < *b) { reg_cmp = -1; return; }
-  reg_cmp = 1;
-}
+#define VM_IMPL_CMP(type, native_type) \
+  void VM::cmp_##type() { \
+    native_type *a = (native_type *)ref(sizeof(native_type) + sizeof(native_type)); \
+    native_type *b = (native_type *)ref(sizeof(native_type)); \
+    VM_DEBUG_2("cmp_##type {} {}", *a, *b); \
+    reg_cmp = (*a == *b) ? 0 : ((*a < *b) ? -1 : 1); \
+  }
 
-void VM::cmp_u16() {
-  uint16_t *a = (uint16_t *)ref(sizeof(uint16_t) + sizeof(uint16_t));
-  uint16_t *b = (uint16_t *)ref(sizeof(uint16_t));
-  if (*a == *b) { reg_cmp = 0; return; }
-  if (*a < *b) { reg_cmp = -1; return; }
-  reg_cmp = 1;
-}
+VM_IMPL_CMP(i8, int8_t)
+VM_IMPL_CMP(u8, uint8_t)
+VM_IMPL_CMP(i16, int16_t)
+VM_IMPL_CMP(u16, uint16_t)
+VM_IMPL_CMP(i32, int32_t)
+VM_IMPL_CMP(u32, uint32_t)
+VM_IMPL_CMP(f32, float)
+VM_IMPL_CMP(i64, int64_t)
+VM_IMPL_CMP(u64, uint64_t)
+VM_IMPL_CMP(f64, double)
 
-void VM::cmp_i16() {
-  int16_t *a = (int16_t *)ref(sizeof(int16_t) + sizeof(int16_t));
-  int16_t *b = (int16_t *)ref(sizeof(int16_t));
-  if (*a == *b) { reg_cmp = 0; return; }
-  if (*a < *b) { reg_cmp = -1; return; }
-  reg_cmp = 1;
-}
+#undef VM_IMPL_CMP
 
-void VM::cmp_u32() {
-  uint32_t *a = (uint32_t *)ref(sizeof(uint32_t) + sizeof(uint32_t));
-  uint32_t *b = (uint32_t *)ref(sizeof(uint32_t));
-  if (*a == *b) { reg_cmp = 0; return; }
-  if (*a < *b) { reg_cmp = -1; return; }
-  reg_cmp = 1;
-}
-
-void VM::cmp_i32() {
-  int32_t *a = (int32_t *)ref(sizeof(int32_t) + sizeof(int32_t));
-  int32_t *b = (int32_t *)ref(sizeof(int32_t));
-  if (*a == *b) { reg_cmp = 0; return; }
-  if (*a < *b) { reg_cmp = -1; return; }
-  reg_cmp = 1;
-}
-
-void VM::cmp_f32() {
-  float *a = (float *)ref(sizeof(float) + sizeof(float));
-  float *b = (float *)ref(sizeof(float));
-  if (*a == *b) { reg_cmp = 0; return; }
-  if (*a < *b) { reg_cmp = -1; return; }
-  reg_cmp = 1;
-}
-
-void VM::cmp_u64() {
-  uint64_t *a = (uint64_t *)ref(sizeof(uint64_t) + sizeof(uint64_t));
-  uint64_t *b = (uint64_t *)ref(sizeof(uint64_t));
-  if (*a == *b) { reg_cmp = 0; return; }
-  if (*a < *b) { reg_cmp = -1; return; }
-  reg_cmp = 1;
-}
-
-void VM::cmp_i64() {
-  int64_t *a = (int64_t *)ref(sizeof(int64_t) + sizeof(int64_t));
-  int64_t *b = (int64_t *)ref(sizeof(int64_t));
-  if (*a == *b) { reg_cmp = 0; return; }
-  if (*a < *b) { reg_cmp = -1; return; }
-  reg_cmp = 1;
-}
-
-void VM::cmp_f64() {
-  double *a = (double *)ref(sizeof(double) + sizeof(double));
-  double *b = (double *)ref(sizeof(double));
-  if (*a == *b) { reg_cmp = 0; return; }
-  if (*a < *b) { reg_cmp = -1; return; }
-  reg_cmp = 1;
-}
 
 
 void VM::jz(size_t offset) {
@@ -984,6 +647,7 @@ void VM::jmp(size_t offset) {
 void VM::ret() { VM_DEBUG_1("ret: not implemented"); dbg(0); }
 
 void VM::dbg(int8_t i) {
+  (void)i; // unused when debugging is disabled
   VM_DEBUG_1("dbg: {} @ {}", i, (size_t)instruction - (size_t)program);
   // Dump stack
   VM_DEBUG_1("\t...\tstack (stack = {:#08x}, stack_top = {:#08x}, delta(stack -> top) = {}):",

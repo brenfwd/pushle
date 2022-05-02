@@ -9,15 +9,17 @@
 
 #include <fmt/core.h>
 
-#define DEBUG_LEVEL 2
+#ifndef VM_DEBUG_LEVEL
+#define VM_DEBUG_LEVEL 0
+#endif
 
-#if DEBUG_LEVEL >= 1
+#if VM_DEBUG_LEVEL >= 1
   #define VM_DEBUG_1(...) fmt::print("[vm]\t {}\n", fmt::format(__VA_ARGS__))
 #else
   #define VM_DEBUG_1(...)
 #endif
 
-#if DEBUG_LEVEL >= 2
+#if VM_DEBUG_LEVEL >= 2
   #define VM_DEBUG_2(...) fmt::print("[vm]\t {}\n", fmt::format(__VA_ARGS__))
 #else
   #define VM_DEBUG_2(...)
@@ -81,21 +83,6 @@ namespace lang {
   const size_t VM_STACK_SIZE = 1024 * 1024;
   const size_t VM_CALL_STACK_SIZE = 1024;
   const size_t VM_SCOPE_LOCALS_SIZE = 0xff;
-
-  enum type {
-    _none,
-    _i8,
-    _u8,
-    _bool,
-    _i16,
-    _u16,
-    _i32,
-    _u32,
-    _f32,
-    _i64,
-    _u64,
-    _f64,
-  };
 
   class Value {
   public:

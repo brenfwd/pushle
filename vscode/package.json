@@ -1,0 +1,25 @@
+{
+    "name": "langasm",
+    "displayName": "langasm",
+    "description": "",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.66.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "langasm",
+            "aliases": ["Langasm", "langasm"],
+            "extensions": [".lsm"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "langasm",
+            "scopeName": "source.lsm",
+            "path": "./syntaxes/langasm.tmLanguage.json"
+        }]
+    }
+}

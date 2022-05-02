@@ -70,10 +70,7 @@ bool VM::step() { // returns false if VM is finished
     case PUSH_I64:  VM_DEBUG_2("i:PUSH_I64");        push_i64(*(int64_t *)read(8)); break;
     case PUSH_U64:  VM_DEBUG_2("i:PUSH_U64");        push_u64(*(uint64_t *)read(8)); break;
     case PUSH_F64:  VM_DEBUG_2("i:PUSH_F64");        push_f64(*(double *)read(8)); break;
-    case PUSH_I128: VM_DEBUG_2("i:PUSH_I128");       push_i128(*(int128_t *)read(16)); break;
-    case PUSH_U128: VM_DEBUG_2("i:PUSH_U128");       push_u128(*(uint128_t *)read(16)); break;
-    case PUSH_F128: VM_DEBUG_2("i:PUSH_F128");       push_f128(*(long double *)read(16)); break;
-
+    
     case POPL_I8:  VM_DEBUG_2("i:POPL_I8");          popl_i8(&scope, *(uint8_t *)read(1)); break;
     case POPL_U8:  VM_DEBUG_2("i:POPL_U8");          popl_u8(&scope, *(uint8_t *)read(1)); break;
     case POPL_BOOL:VM_DEBUG_2("i:POPL_BOOL");        popl_bool(&scope, *(uint8_t *)read(1)); break;
@@ -85,9 +82,6 @@ bool VM::step() { // returns false if VM is finished
     case POPL_I64: VM_DEBUG_2("i:POPL_I64");         popl_i64(&scope, *(uint8_t *)read(1)); break;
     case POPL_U64: VM_DEBUG_2("i:POPL_U64");         popl_u64(&scope, *(uint8_t *)read(1)); break;
     case POPL_F64: VM_DEBUG_2("i:POPL_F64");         popl_f64(&scope, *(uint8_t *)read(1)); break;
-    case POPL_I128:VM_DEBUG_2("i:POPL_I128");        popl_i128(&scope, *(uint8_t *)read(1)); break;
-    case POPL_U128:VM_DEBUG_2("i:POPL_U128");        popl_u128(&scope, *(uint8_t *)read(1)); break;
-    case POPL_F128:VM_DEBUG_2("i:POPL_F128");        popl_f128(&scope, *(uint8_t *)read(1)); break;
       
     case PUSHL_I8:  VM_DEBUG_2("i:PUSHL_I8");        pushl_i8(&scope, *(int8_t *)read(1)); break;
     case PUSHL_U8:  VM_DEBUG_2("i:PUSHL_U8");        pushl_u8(&scope, *(uint8_t *)read(1)); break;
@@ -100,10 +94,7 @@ bool VM::step() { // returns false if VM is finished
     case PUSHL_I64: VM_DEBUG_2("i:PUSHL_I64");       pushl_i64(&scope, *(uint8_t *)read(1)); break;
     case PUSHL_U64: VM_DEBUG_2("i:PUSHL_U64");       pushl_u64(&scope, *(uint8_t *)read(1)); break;
     case PUSHL_F64: VM_DEBUG_2("i:PUSHL_F64");       pushl_f64(&scope, *(uint8_t *)read(1)); break;
-    case PUSHL_I128:VM_DEBUG_2("i:PUSHL_I128");      pushl_i128(&scope, *(uint8_t *)read(1)); break;
-    case PUSHL_U128:VM_DEBUG_2("i:PUSHL_U128");      pushl_u128(&scope, *(uint8_t *)read(1)); break;
-    case PUSHL_F128:VM_DEBUG_2("i:PUSHL_F128");      pushl_f128(&scope, *(uint8_t *)read(1)); break;
-
+    
     case SETL_I8:   VM_DEBUG_2("i:SETL_I8");        { int8_t index = *(uint8_t *)read(1);  int8_t      value = *(int8_t *)read(1);       setl_i8(value, &scope, index);   break; }
     case SETL_U8:   VM_DEBUG_2("i:SETL_U8");        { int8_t index = *(uint8_t *)read(1);  uint8_t     value = *(uint8_t *)read(1);      setl_u8(value, &scope, index);   break; }
     case SETL_BOOL: VM_DEBUG_2("i:SETL_BOOL");      { int8_t index = *(uint8_t *)read(1);  bool        value = *(bool *)read(1);         setl_bool(value, &scope, index); break; }
@@ -115,31 +106,6 @@ bool VM::step() { // returns false if VM is finished
     case SETL_I64:  VM_DEBUG_2("i:SETL_I64");       { int8_t index = *(uint8_t *)read(1);  int64_t     value = *(int64_t *)read(8);      setl_i64(value, &scope, index);  break; }
     case SETL_U64:  VM_DEBUG_2("i:SETL_U64");       { int8_t index = *(uint8_t *)read(1);  uint64_t    value = *(uint64_t *)read(8);     setl_u64(value, &scope, index);  break; }
     case SETL_F64:  VM_DEBUG_2("i:SETL_F64");       { int8_t index = *(uint8_t *)read(1);  double      value = *(double *)read(8);       setl_f64(value, &scope, index);  break; }
-    case SETL_I128: {
-      VM_DEBUG_2("i:SETL_I128");
-      int8_t index = *(uint8_t *)read(1);
-      int128_t value;
-      std::vector<uint8_t> chunk;
-      uint8_t *raw = (uint8_t *)read(16);
-      chunk.assign(raw, raw + 16);
-      std::reverse(chunk.begin(), chunk.end());
-      boost::multiprecision::import_bits(value, chunk.begin(), chunk.end());
-      setl_i128(value, &scope, index);
-      break;
-    }
-    case SETL_U128: {
-      VM_DEBUG_2("i:SETL_U128");
-      int8_t index = *(uint8_t *)read(1);
-      uint128_t value;
-      std::vector<uint8_t> chunk;
-      uint8_t *raw = (uint8_t *)read(16);
-      chunk.assign(raw, raw + 16);
-      std::reverse(chunk.begin(), chunk.end());
-      boost::multiprecision::import_bits(value, chunk.begin(), chunk.end());
-      setl_u128(value, &scope, index);
-      break;
-    }
-    case SETL_F128: VM_DEBUG_2("i:SETL_F128");      { int8_t index = *(uint8_t *)read(1);  long double value = *(long double *)read(16); setl_f128(value, &scope, index); break; }
 
     case ADD_I8:    VM_DEBUG_2("i:ADD_I8");          add_i8(); break;
     case ADD_U8:    VM_DEBUG_2("i:ADD_U8");          add_u8(); break;
@@ -151,10 +117,7 @@ bool VM::step() { // returns false if VM is finished
     case ADD_I64:   VM_DEBUG_2("i:ADD_I64");         add_i64(); break;
     case ADD_U64:   VM_DEBUG_2("i:ADD_U64");         add_u64(); break;
     case ADD_F64:   VM_DEBUG_2("i:ADD_F64");         add_f64(); break;
-    case ADD_I128:  VM_DEBUG_2("i:ADD_I128");        add_i128(); break;
-    case ADD_U128:  VM_DEBUG_2("i:ADD_U128");        add_u128(); break;
-    case ADD_F128:  VM_DEBUG_2("i:ADD_F128");        add_f128(); break;
-
+    
     case SUB_I8:    VM_DEBUG_2("i:SUB_I8");          sub_i8(); break;
     case SUB_U8:    VM_DEBUG_2("i:SUB_U8");          sub_u8(); break;
     case SUB_I16:   VM_DEBUG_2("i:SUB_I16");         sub_i16(); break;
@@ -165,10 +128,7 @@ bool VM::step() { // returns false if VM is finished
     case SUB_I64:   VM_DEBUG_2("i:SUB_I64");         sub_i64(); break;
     case SUB_U64:   VM_DEBUG_2("i:SUB_U64");         sub_u64(); break;
     case SUB_F64:   VM_DEBUG_2("i:SUB_F64");         sub_f64(); break;
-    case SUB_I128:  VM_DEBUG_2("i:SUB_I128");        sub_i128(); break;
-    case SUB_U128:  VM_DEBUG_2("i:SUB_U128");        sub_u128(); break;
-    case SUB_F128:  VM_DEBUG_2("i:SUB_F128");        sub_f128(); break;
-
+    
     case MUL_I8:    VM_DEBUG_2("i:MUL_I8");          mul_i8(); break;
     case MUL_U8:    VM_DEBUG_2("i:MUL_U8");          mul_u8(); break;
     case MUL_I16:   VM_DEBUG_2("i:MUL_I16");         mul_i16(); break;
@@ -179,10 +139,7 @@ bool VM::step() { // returns false if VM is finished
     case MUL_I64:   VM_DEBUG_2("i:MUL_I64");         mul_i64(); break;
     case MUL_U64:   VM_DEBUG_2("i:MUL_U64");         mul_u64(); break;
     case MUL_F64:   VM_DEBUG_2("i:MUL_F64");         mul_f64(); break;
-    case MUL_I128:  VM_DEBUG_2("i:MUL_I128");        mul_i128(); break;
-    case MUL_U128:  VM_DEBUG_2("i:MUL_U128");        mul_u128(); break;
-    case MUL_F128:  VM_DEBUG_2("i:MUL_F128");        mul_f128(); break;
-
+    
     case DIV_I8:    VM_DEBUG_2("i:DIV_I8");          div_i8(); break;
     case DIV_U8:    VM_DEBUG_2("i:DIV_U8");          div_u8(); break;
     case DIV_I16:   VM_DEBUG_2("i:DIV_I16");         div_i16(); break;
@@ -193,10 +150,7 @@ bool VM::step() { // returns false if VM is finished
     case DIV_I64:   VM_DEBUG_2("i:DIV_I64");         div_i64(); break;
     case DIV_U64:   VM_DEBUG_2("i:DIV_U64");         div_u64(); break;
     case DIV_F64:   VM_DEBUG_2("i:DIV_F64");         div_f64(); break;
-    case DIV_I128:  VM_DEBUG_2("i:DIV_I128");        div_i128(); break;
-    case DIV_U128:  VM_DEBUG_2("i:DIV_U128");        div_u128(); break;
-    case DIV_F128:  VM_DEBUG_2("i:DIV_F128");        div_f128(); break;
-
+    
     case REM_I8:    VM_DEBUG_2("i:REM_I8");          rem_i8(); break;
     case REM_U8:    VM_DEBUG_2("i:REM_U8");          rem_u8(); break;
     case REM_I16:   VM_DEBUG_2("i:REM_I16");         rem_i16(); break;
@@ -207,19 +161,14 @@ bool VM::step() { // returns false if VM is finished
     case REM_I64:   VM_DEBUG_2("i:REM_I64");         rem_i64(); break;
     case REM_U64:   VM_DEBUG_2("i:REM_U64");         rem_u64(); break;
     case REM_F64:   VM_DEBUG_2("i:REM_F64");         rem_f64(); break;
-    case REM_I128:  VM_DEBUG_2("i:REM_I128");        rem_i128(); break;
-    case REM_U128:  VM_DEBUG_2("i:REM_U128");        rem_u128(); break;
-    case REM_F128:  VM_DEBUG_2("i:REM_F128");        rem_f128(); break;
-
+    
     case ABS_I8:    VM_DEBUG_2("i:ABS_I8");          abs_i8(); break;
     case ABS_I16:   VM_DEBUG_2("i:ABS_I16");         abs_i16(); break;
     case ABS_I32:   VM_DEBUG_2("i:ABS_I32");         abs_i32(); break;
     case ABS_F32:   VM_DEBUG_2("i:ABS_F32");         abs_f32(); break;
     case ABS_I64:   VM_DEBUG_2("i:ABS_I64");         abs_i64(); break;
     case ABS_F64:   VM_DEBUG_2("i:ABS_F64");         abs_f64(); break;
-    case ABS_I128:  VM_DEBUG_2("i:ABS_I128");        abs_i128(); break;
-    case ABS_F128:  VM_DEBUG_2("i:ABS_F128");        abs_f128(); break;
-
+    
     case DEC_I8:    VM_DEBUG_2("i:DEC_I8");          dec_i8(); break;
     case DEC_U8:    VM_DEBUG_2("i:DEC_U8");          dec_u8(); break;
     case DEC_I16:   VM_DEBUG_2("i:DEC_I16");         dec_i16(); break;
@@ -230,10 +179,7 @@ bool VM::step() { // returns false if VM is finished
     case DEC_I64:   VM_DEBUG_2("i:DEC_I64");         dec_i64(); break;
     case DEC_U64:   VM_DEBUG_2("i:DEC_U64");         dec_u64(); break;
     case DEC_F64:   VM_DEBUG_2("i:DEC_F64");         dec_f64(); break;
-    case DEC_I128:  VM_DEBUG_2("i:DEC_I128");        dec_i128(); break;
-    case DEC_U128:  VM_DEBUG_2("i:DEC_U128");        dec_u128(); break;
-    case DEC_F128:  VM_DEBUG_2("i:DEC_F128");        dec_f128(); break;
-
+    
     case INC_I8:    VM_DEBUG_2("i:INC_I8");          inc_i8(); break;
     case INC_U8:    VM_DEBUG_2("i:INC_U8");          inc_u8(); break;
     case INC_I16:   VM_DEBUG_2("i:INC_I16");         inc_i16(); break;
@@ -244,30 +190,24 @@ bool VM::step() { // returns false if VM is finished
     case INC_I64:   VM_DEBUG_2("i:INC_I64");         inc_i64(); break;
     case INC_U64:   VM_DEBUG_2("i:INC_U64");         inc_u64(); break;
     case INC_F64:   VM_DEBUG_2("i:INC_F64");         inc_f64(); break;
-    case INC_I128:  VM_DEBUG_2("i:INC_I128");        inc_i128(); break;
-    case INC_U128:  VM_DEBUG_2("i:INC_U128");        inc_u128(); break;
-    case INC_F128:  VM_DEBUG_2("i:INC_F128");        inc_f128(); break;
 
     case DUPG:      VM_DEBUG_2("i:DUPG");            dupg(*(uint8_t *)read(1)); break;
     case DUP1:      VM_DEBUG_2("i:DUP1");            dup1(); break;
     case DUP2:      VM_DEBUG_2("i:DUP2");            dup2(); break;
     case DUP4:      VM_DEBUG_2("i:DUP4");            dup4(); break;
     case DUP8:      VM_DEBUG_2("i:DUP8");            dup8(); break;
-    case DUP16:     VM_DEBUG_2("i:DUP16");           dup16(); break;
     
     case SWAPG:     VM_DEBUG_2("i:SWAPG");           swapg(*(uint8_t *)read(1)); break;
     case SWAP1:     VM_DEBUG_2("i:SWAP1");           swap1(); break;
     case SWAP2:     VM_DEBUG_2("i:SWAP2");           swap2(); break;
     case SWAP4:     VM_DEBUG_2("i:SWAP4");           swap4(); break;
     case SWAP8:     VM_DEBUG_2("i:SWAP8");           swap8(); break;
-    case SWAP16:    VM_DEBUG_2("i:SWAP16");          swap16(); break;
 
     case POPG:      VM_DEBUG_2("i:POPG");            popg(*(uint8_t *)read(1)); break;
     case POP1:      VM_DEBUG_2("i:POP1");            pop1(); break;
     case POP2:      VM_DEBUG_2("i:POP2");            pop2(); break;
     case POP4:      VM_DEBUG_2("i:POP4");            pop4(); break;
     case POP8:      VM_DEBUG_2("i:POP8");            pop8(); break;
-    case POP16:     VM_DEBUG_2("i:POP16");           pop16(); break;
 
     case CMP_I8:    VM_DEBUG_2("i:CMP_I8");          cmp_i8(); break;
     case CMP_U8:    VM_DEBUG_2("i:CMP_U8");          cmp_u8(); break;
@@ -279,9 +219,6 @@ bool VM::step() { // returns false if VM is finished
     case CMP_I64:   VM_DEBUG_2("i:CMP_I64");         cmp_i64(); break;
     case CMP_U64:   VM_DEBUG_2("i:CMP_U64");         cmp_u64(); break;
     case CMP_F64:   VM_DEBUG_2("i:CMP_F64");         cmp_f64(); break;
-    case CMP_I128:  VM_DEBUG_2("i:CMP_I128");        cmp_i128(); break;
-    case CMP_U128:  VM_DEBUG_2("i:CMP_U128");        cmp_u128(); break;
-    case CMP_F128:  VM_DEBUG_2("i:CMP_F128");        cmp_f128(); break;
 
     case JZ:        VM_DEBUG_2("i:JZ");              jz(*(size_t *)read(8)); break;
     case JNZ:       VM_DEBUG_2("i:JNZ");             jnz(*(size_t *)read(8)); break;
@@ -358,9 +295,6 @@ void VM::push_f32(float value) { push(&value, sizeof(value)); }
 void VM::push_i64(int64_t value) { push(&value, sizeof(value)); }
 void VM::push_u64(uint64_t value) { push(&value, sizeof(value)); }
 void VM::push_f64(double value) { push(&value, sizeof(value)); }
-void VM::push_i128(int128_t value) { push(&value, sizeof(value)); }
-void VM::push_u128(uint128_t value) { push(&value, sizeof(value)); }
-void VM::push_f128(long double value) { push(&value, sizeof(value)); }
 
 
 
@@ -375,9 +309,6 @@ void VM::popl_f32(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_f32 {}", ind
 void VM::popl_i64(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_i64 {}", index); scope->local(index, *(int64_t *)pop(sizeof(int64_t))); }
 void VM::popl_u64(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_u64 {}", index); scope->local(index, *(uint64_t *)pop(sizeof(uint64_t))); }
 void VM::popl_f64(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_f64 {}", index); scope->local(index, *(double *)pop(sizeof(double))); }
-void VM::popl_i128(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_i128 {}", index); int128_t value; uint8_t *chunk = (uint8_t *)pop(16); boost::multiprecision::import_bits(value, chunk, chunk + 16); scope->local(index, value); }
-void VM::popl_u128(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_u128 {}", index); uint128_t value; uint8_t *chunk = (uint8_t *)pop(16); boost::multiprecision::import_bits(value, chunk, chunk + 16); scope->local(index, value); }
-void VM::popl_f128(VMScope *scope, uint8_t index) { VM_DEBUG_2("popl_f128 {}", index); scope->local(index, *(long double *)pop(sizeof(long double))); }
 
 
 
@@ -392,10 +323,6 @@ void VM::pushl_f32(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_f32 {}", i
 void VM::pushl_i64(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_i64 {}", index); int64_t value = scope->local(index)->as_i64_safe(); push(&value, sizeof(value)); }
 void VM::pushl_u64(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_u64 {}", index); uint64_t value = scope->local(index)->as_u64_safe(); push(&value, sizeof(value)); }
 void VM::pushl_f64(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_f64 {}", index); double value = scope->local(index)->as_f64_safe(); push(&value, sizeof(value)); }
-void VM::pushl_i128(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_i128 {}", index); int128_t value = scope->local(index)->as_i128_safe(); std::vector<uint8_t> bytes; boost::multiprecision::export_bits(value, std::back_inserter(bytes), 8); push(bytes.data(), 16); }
-void VM::pushl_u128(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_u128 {}", index); uint128_t value = scope->local(index)->as_u128_safe(); std::vector<uint8_t> bytes; boost::multiprecision::export_bits(value, std::back_inserter(bytes), 8); push(bytes.data(), 16); }
-// void VM::pushl_u128(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_u128 {}", index); uint128_t value = scope->local(index)->as_u128_safe(); push(&value, 16); }
-void VM::pushl_f128(VMScope *scope, uint8_t index) { VM_DEBUG_2("pushl_f128 {}", index); long double value = scope->local(index)->as_f128_safe(); push(&value, sizeof(value)); }
 
 
 
@@ -410,9 +337,6 @@ void VM::setl_f32(float value, VMScope *scope, uint8_t index)        { VM_DEBUG_
 void VM::setl_i64(int64_t value, VMScope *scope, uint8_t index)      { VM_DEBUG_2("setl_i64 #{} = {}", index, value);  *scope->local(index) = value; }
 void VM::setl_u64(uint64_t value, VMScope *scope, uint8_t index)     { VM_DEBUG_2("setl_u64 #{} = {}", index, value);  *scope->local(index) = value; }
 void VM::setl_f64(double value, VMScope *scope, uint8_t index)       { VM_DEBUG_2("setl_f64 #{} = {}", index, value);  *scope->local(index) = value; }
-void VM::setl_i128(int128_t value, VMScope *scope, uint8_t index)    { VM_DEBUG_2("setl_i128 #{} = {}", index, boost::multiprecision::to_string(value)); scope->local(index, value); }
-void VM::setl_u128(uint128_t value, VMScope *scope, uint8_t index)   { VM_DEBUG_2("setl_u128 #{} = {}", index, boost::multiprecision::to_string(value)); scope->local(index, value); }
-void VM::setl_f128(long double value, VMScope *scope, uint8_t index) { VM_DEBUG_2("setl_f128 #{} = {}", index, value); *scope->local(index) = value; }
 
 
 
@@ -486,27 +410,6 @@ void VM::add_f64() {
   *b = *a + *b;
 }
 
-void VM::add_i128() {
-  int128_t *a = (int128_t *)ref(sizeof(int128_t) + sizeof(int128_t));
-  int128_t *b = (int128_t *)ref(sizeof(int128_t));
-  VM_DEBUG_2("add_i128: {} + {} = {}", boost::multiprecision::to_string(*a), boost::multiprecision::to_string(*b), boost::multiprecision::to_string(*a + *b));
-  *b = *a + *b;
-}
-
-void VM::add_u128() {
-  uint128_t *a = (uint128_t *)ref(sizeof(uint128_t) + sizeof(uint128_t));
-  uint128_t *b = (uint128_t *)ref(sizeof(uint128_t));
-  VM_DEBUG_2("add_u128: {} + {} = {}", boost::multiprecision::to_string(*a), boost::multiprecision::to_string(*b), boost::multiprecision::to_string(*a + *b));
-  *b = *a + *b;
-}
-
-void VM::add_f128() {
-  long double *a = (long double *)ref(sizeof(long double) + sizeof(long double));
-  long double *b = (long double *)ref(sizeof(long double));
-  VM_DEBUG_2("add_f128: {} + {} = {}", *a, *b, *a + *b);
-  *b = *a + *b;
-}
-
 
 
 
@@ -570,24 +473,6 @@ void VM::sub_f64() {
   *b = *a - *b;
 }
 
-void VM::sub_i128() {
-  int128_t *a = (int128_t *)ref(sizeof(int128_t) + sizeof(int128_t));
-  int128_t *b = (int128_t *)ref(sizeof(int128_t));
-  *b = *a - *b;
-}
-
-void VM::sub_u128() {
-  uint128_t *a = (uint128_t *)ref(sizeof(uint128_t) + sizeof(uint128_t));
-  uint128_t *b = (uint128_t *)ref(sizeof(uint128_t));
-  *b = *a - *b;
-}
-
-void VM::sub_f128() {
-  long double *a = (long double *)ref(sizeof(long double) + sizeof(long double));
-  long double *b = (long double *)ref(sizeof(long double));
-  *b = *a - *b;
-}
-
 
 
 void VM::mul_i8() {
@@ -647,24 +532,6 @@ void VM::mul_u64() {
 void VM::mul_f64() {
   double *a = (double *)ref(sizeof(double) + sizeof(double));
   double *b = (double *)ref(sizeof(double));
-  *b = *a * *b;
-}
-
-void VM::mul_i128() {
-  int128_t *a = (int128_t *)ref(sizeof(int128_t) + sizeof(int128_t));
-  int128_t *b = (int128_t *)ref(sizeof(int128_t));
-  *b = *a * *b;
-}
-
-void VM::mul_u128() {
-  uint128_t *a = (uint128_t *)ref(sizeof(uint128_t) + sizeof(uint128_t));
-  uint128_t *b = (uint128_t *)ref(sizeof(uint128_t));
-  *b = *a * *b;
-}
-
-void VM::mul_f128() {
-  long double *a = (long double *)ref(sizeof(long double) + sizeof(long double));
-  long double *b = (long double *)ref(sizeof(long double));
   *b = *a * *b;
 }
 
@@ -736,27 +603,6 @@ void VM::div_u64() {
 void VM::div_f64() {
   double *a = (double *)ref(sizeof(double) + sizeof(double));
   double *b = (double *)ref(sizeof(double));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a / *b;
-}
-
-void VM::div_i128() {
-  int128_t *a = (int128_t *)ref(sizeof(int128_t) + sizeof(int128_t));
-  int128_t *b = (int128_t *)ref(sizeof(int128_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a / *b;
-}
-
-void VM::div_u128() {
-  uint128_t *a = (uint128_t *)ref(sizeof(uint128_t) + sizeof(uint128_t));
-  uint128_t *b = (uint128_t *)ref(sizeof(uint128_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a / *b;
-}
-
-void VM::div_f128() {
-  long double *a = (long double *)ref(sizeof(long double) + sizeof(long double));
-  long double *b = (long double *)ref(sizeof(long double));
   if (*b == 0) { reg_err = 1; return; }
   *b = *a / *b;
 }
@@ -833,28 +679,6 @@ void VM::rem_f64() {
   *b = fmodf64(*a, *b);
 }
 
-void VM::rem_i128() {
-  int128_t *a = (int128_t *)ref(sizeof(int128_t) + sizeof(int128_t));
-  int128_t *b = (int128_t *)ref(sizeof(int128_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a % *b;
-}
-
-void VM::rem_u128() {
-  uint128_t *a = (uint128_t *)ref(sizeof(uint128_t) + sizeof(uint128_t));
-  uint128_t *b = (uint128_t *)ref(sizeof(uint128_t));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = *a % *b;
-}
-
-void VM::rem_f128() {
-  long double *a = (long double *)ref(sizeof(long double) + sizeof(long double));
-  long double *b = (long double *)ref(sizeof(long double));
-  if (*b == 0) { reg_err = 1; return; }
-  *b = fmodf128(*a, *b);
-}
-
-
 
 void VM::abs_i8() {
   int8_t *a = (int8_t *)ref(sizeof(int8_t));
@@ -884,16 +708,6 @@ void VM::abs_i64() {
 void VM::abs_f64() {
   double *a = (double *)ref(sizeof(double));
   *a = fabsf64(*a);
-}
-
-void VM::abs_i128() {
-  int128_t *a = (int128_t *)ref(sizeof(int128_t));
-  *a = *a > 0 ? *a : -*a;
-}
-
-void VM::abs_f128() {
-  long double *a = (long double *)ref(sizeof(long double));
-  *a = fabsf128(*a);
 }
 
 
@@ -945,21 +759,6 @@ void VM::dec_u64() {
 
 void VM::dec_f64() {
   double *a = (double *)ref(sizeof(double));
-  *a = *a - 1;
-}
-
-void VM::dec_i128() {
-  int128_t *a = (int128_t *)ref(sizeof(int128_t));
-  *a = *a - 1;
-}
-
-void VM::dec_u128() {
-  uint128_t *a = (uint128_t *)ref(sizeof(uint128_t));
-  *a = *a - 1;
-}
-
-void VM::dec_f128() {
-  long double *a = (long double *)ref(sizeof(long double));
   *a = *a - 1;
 }
 
@@ -1015,21 +814,6 @@ void VM::inc_f64() {
   *a = *a + 1;
 }
 
-void VM::inc_i128() {
-  int128_t *a = (int128_t *)ref(sizeof(int128_t));
-  *a = *a + 1;
-}
-
-void VM::inc_u128() {
-  uint128_t *a = (uint128_t *)ref(sizeof(uint128_t));
-  *a = *a + 1;
-}
-
-void VM::inc_f128() {
-  long double *a = (long double *)ref(sizeof(long double));
-  *a = *a + 1;
-}
-
 
 
 
@@ -1042,7 +826,6 @@ void VM::dup1() { dupg(1); }
 void VM::dup2() { dupg(2); }
 void VM::dup4() { dupg(4); }
 void VM::dup8() { dupg(8); }
-void VM::dup16() { dupg(16); }
 
 
 
@@ -1061,7 +844,6 @@ void VM::swap1() { swapg(1); }
 void VM::swap2() { swapg(2); }
 void VM::swap4() { swapg(4); }
 void VM::swap8() { swapg(8); }
-void VM::swap16() { swapg(16); }
 
 
 
@@ -1073,7 +855,6 @@ void VM::pop1() { popg(1); }
 void VM::pop2() { popg(2); }
 void VM::pop4() { popg(4); }
 void VM::pop8() { popg(8); }
-void VM::pop16() { popg(16); }
 
 
 void VM::cmp_u8() {
@@ -1151,30 +932,6 @@ void VM::cmp_i64() {
 void VM::cmp_f64() {
   double *a = (double *)ref(sizeof(double) + sizeof(double));
   double *b = (double *)ref(sizeof(double));
-  if (*a == *b) { reg_cmp = 0; return; }
-  if (*a < *b) { reg_cmp = -1; return; }
-  reg_cmp = 1;
-}
-
-void VM::cmp_i128() {
-  int128_t *a = (int128_t *)ref(sizeof(int128_t) + sizeof(int128_t));
-  int128_t *b = (int128_t *)ref(sizeof(int128_t));
-  if (*a == *b) { reg_cmp = 0; return; }
-  if (*a < *b) { reg_cmp = -1; return; }
-  reg_cmp = 1;
-}
-
-void VM::cmp_u128() {
-  uint128_t *a = (uint128_t *)ref(sizeof(uint128_t) + sizeof(uint128_t));
-  uint128_t *b = (uint128_t *)ref(sizeof(uint128_t));
-  if (*a == *b) { reg_cmp = 0; return; }
-  if (*a < *b) { reg_cmp = -1; return; }
-  reg_cmp = 1;
-}
-
-void VM::cmp_f128() {
-  long double *a = (long double *)ref(sizeof(long double) + sizeof(long double));
-  long double *b = (long double *)ref(sizeof(long double));
   if (*a == *b) { reg_cmp = 0; return; }
   if (*a < *b) { reg_cmp = -1; return; }
   reg_cmp = 1;

@@ -11,10 +11,7 @@
   prefix##F32, \
   prefix##I64, \
   prefix##U64, \
-  prefix##F64, \
-  prefix##I128, \
-  prefix##U128, \
-  prefix##F128
+  prefix##F64
 
 #define _OP_N(prefix) \
   prefix##I8, \
@@ -26,10 +23,7 @@
   prefix##F32, \
   prefix##I64, \
   prefix##U64, \
-  prefix##F64, \
-  prefix##I128, \
-  prefix##U128, \
-  prefix##F128
+  prefix##F64
 
 #define _OP_I(prefix) \
   prefix##I8, \
@@ -38,8 +32,7 @@
   prefix##F32, \
   prefix##I64, \
   prefix##F64, \
-  prefix##I128, \
-  prefix##F128
+  prefix##I128
 
 #define _OP_S(prefix) \
   prefix##1, \

@@ -41,7 +41,7 @@
   prefix##16
 
 namespace lang {
-  enum type {
+  enum DataType {
     _none,
     _i8,
     _u8,

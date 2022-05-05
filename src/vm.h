@@ -126,7 +126,7 @@ namespace lang {
 
     // ~Value();
 
-    inline type get_type() const {
+    inline DataType get_type() const {
       return _type;
     }
 
@@ -246,7 +246,7 @@ namespace lang {
 
 
   private:
-    type _type;
+    DataType _type;
     union {
       int8_t _i8;
       uint8_t _u8;

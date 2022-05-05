@@ -189,11 +189,11 @@ int main(int argc, char** argv) {
 
   for (auto tokens : program_tokens) {
     std::vector<Bytecode> bytes;
-    std::vector<lang::type> arg_types;
-    // lang::type arg_types.push_back(lang::type::_none);
+    std::vector<lang::DataType> arg_types;
+    // lang::DataType arg_types.push_back(lang::DataType::_none);
     for (auto token : tokens) {
       if (token.is_label()) {
-        if (!arg_types.empty() && arg_types.front() != lang::type::_u64) {
+        if (!arg_types.empty() && arg_types.front() != lang::DataType::_u64) {
           throw std::runtime_error("Label can only be used with u64");
         } else if (!arg_types.empty()) {
           arg_types.erase(arg_types.begin());
@@ -204,38 +204,38 @@ int main(int argc, char** argv) {
         throw std::runtime_error("String not implemented");
       } else if (token.is_number()) {
         // pop from front
-        lang::type type = arg_types.front();
+        lang::DataType type = arg_types.front();
         arg_types.erase(arg_types.begin());
         switch (type) {
-          case lang::type::_none: {
+          case lang::DataType::_none: {
             throw std::runtime_error("Unexpected number");
           }
-          case lang::type::_i8: {
+          case lang::DataType::_i8: {
             // push i8 to bytes
             bytes.emplace_back(std::stoi(token.text()));
             break;
           }
-          case lang::type::_u8:
-          case lang::type::_bool:  {// pretty much the same
+          case lang::DataType::_u8:
+          case lang::DataType::_bool:  {// pretty much the same
             // push u8 to bytes
             bytes.emplace_back(std::stoul(token.text()));
             break;
           }
-          case lang::type::_i16: {
+          case lang::DataType::_i16: {
             // push i16 to bytes (little endian)
             int16_t i16 = std::stoi(token.text());
             bytes.emplace_back(i16 & 0xFF);
             bytes.emplace_back(i16 >> 8);
             break;
           }
-          case lang::type::_u16: {
+          case lang::DataType::_u16: {
             // push u16 to bytes (little endian)
             uint16_t u16 = std::stoul(token.text());
             bytes.emplace_back(u16 & 0xFF);
             bytes.emplace_back(u16 >> 8);
             break;
           }
-          case lang::type::_i32: {
+          case lang::DataType::_i32: {
             // push i32 to bytes (little endian)
             int32_t i32 = std::stoi(token.text());
             bytes.emplace_back(i32 & 0xFF);
@@ -244,7 +244,7 @@ int main(int argc, char** argv) {
             bytes.emplace_back(i32 >> 24);
             break;
           }
-          case lang::type::_u32: {
+          case lang::DataType::_u32: {
             // push u32 to bytes (little endian)
             uint32_t u32 = std::stoul(token.text());
             bytes.emplace_back(u32 & 0xFF);
@@ -253,7 +253,7 @@ int main(int argc, char** argv) {
             bytes.emplace_back(u32 >> 24);
             break;
           }
-          case lang::type::_f32: {
+          case lang::DataType::_f32: {
             // push f32 to bytes (little endian)
             float f32 = std::stof(token.text());
             uint32_t u32 = (union { float f; uint32_t u; }){f32}.u;
@@ -263,7 +263,7 @@ int main(int argc, char** argv) {
             bytes.emplace_back(u32 >> 24);
             break;
           }
-          case lang::type::_i64: {
+          case lang::DataType::_i64: {
             // push i64 to bytes (little endian)
             int64_t i64 = std::stoll(token.text());
             bytes.emplace_back(i64 & 0xFF);
@@ -276,7 +276,7 @@ int main(int argc, char** argv) {
             bytes.emplace_back(i64 >> 56);
             break;
           }
-          case lang::type::_u64: {
+          case lang::DataType::_u64: {
             // push u64 to bytes (little endian)
             uint64_t u64 = std::stoull(token.text());
             bytes.emplace_back(u64 & 0xFF);
@@ -289,7 +289,7 @@ int main(int argc, char** argv) {
             bytes.emplace_back(u64 >> 56);
             break;
           }
-          case lang::type::_f64: {
+          case lang::DataType::_f64: {
             // push f64 to bytes (little endian)
             double f64 = std::stod(token.text());
             uint64_t u64 = (union { double f; uint64_t u; }){f64}.u;
@@ -313,190 +313,190 @@ int main(int argc, char** argv) {
         std::string text = token.text();
         if (text == "push_i8") {
           bytes.emplace_back(lang::Op::PUSH_I8);
-          arg_types.push_back(lang::type::_i8);
+          arg_types.push_back(lang::DataType::_i8);
         }
         else if (text == "push_u8") {
           bytes.emplace_back(lang::Op::PUSH_U8);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "push_bool") {
           bytes.emplace_back(lang::Op::PUSH_BOOL);
-          arg_types.push_back(lang::type::_bool);
+          arg_types.push_back(lang::DataType::_bool);
         }
         else if (text == "push_i16") {
           bytes.emplace_back(lang::Op::PUSH_I16);
-          arg_types.push_back(lang::type::_i16);
+          arg_types.push_back(lang::DataType::_i16);
         }
         else if (text == "push_u16") {
           bytes.emplace_back(lang::Op::PUSH_U16);
-          arg_types.push_back(lang::type::_u16);
+          arg_types.push_back(lang::DataType::_u16);
         }
         else if (text == "push_i32") {
           bytes.emplace_back(lang::Op::PUSH_I32);
-          arg_types.push_back(lang::type::_i32);
+          arg_types.push_back(lang::DataType::_i32);
         }
         else if (text == "push_u32") {
           bytes.emplace_back(lang::Op::PUSH_U32);
-          arg_types.push_back(lang::type::_u32);
+          arg_types.push_back(lang::DataType::_u32);
         }
         else if (text == "push_f32") {
           bytes.emplace_back(lang::Op::PUSH_F32);
-          arg_types.push_back(lang::type::_f32);
+          arg_types.push_back(lang::DataType::_f32);
         }
         else if (text == "push_i64") {
           bytes.emplace_back(lang::Op::PUSH_I64);
-          arg_types.push_back(lang::type::_i64);
+          arg_types.push_back(lang::DataType::_i64);
         }
         else if (text == "push_u64") {
           bytes.emplace_back(lang::Op::PUSH_U64);
-          arg_types.push_back(lang::type::_u64);
+          arg_types.push_back(lang::DataType::_u64);
         }
         else if (text == "push_f64") {
           bytes.emplace_back(lang::Op::PUSH_F64);
-          arg_types.push_back(lang::type::_f64);
+          arg_types.push_back(lang::DataType::_f64);
         }
         else if (text == "popl_i8") {
           bytes.emplace_back(lang::Op::POPL_I8);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "popl_u8") {
           bytes.emplace_back(lang::Op::POPL_U8);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "popl_bool") {
           bytes.emplace_back(lang::Op::POPL_BOOL);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "popl_i16") {
           bytes.emplace_back(lang::Op::POPL_I16);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "popl_u16") {
           bytes.emplace_back(lang::Op::POPL_U16);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "popl_i32") {
           bytes.emplace_back(lang::Op::POPL_I32);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "popl_u32") {
           bytes.emplace_back(lang::Op::POPL_U32);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "popl_f32") {
           bytes.emplace_back(lang::Op::POPL_F32);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "popl_i64") {
           bytes.emplace_back(lang::Op::POPL_I64);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "popl_u64") {
           bytes.emplace_back(lang::Op::POPL_U64);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "popl_f64") {
           bytes.emplace_back(lang::Op::POPL_F64);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "pushl_i8") {
           bytes.emplace_back(lang::Op::PUSHL_I8);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "pushl_u8") {
           bytes.emplace_back(lang::Op::PUSHL_U8);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "pushl_bool") {
           bytes.emplace_back(lang::Op::PUSHL_BOOL);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "pushl_i16") {
           bytes.emplace_back(lang::Op::PUSHL_I16);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "pushl_u16") {
           bytes.emplace_back(lang::Op::PUSHL_U16);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "pushl_i32") {
           bytes.emplace_back(lang::Op::PUSHL_I32);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "pushl_u32") {
           bytes.emplace_back(lang::Op::PUSHL_U32);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "pushl_f32") {
           bytes.emplace_back(lang::Op::PUSHL_F32);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "pushl_i64") {
           bytes.emplace_back(lang::Op::PUSHL_I64);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "pushl_u64") {
           bytes.emplace_back(lang::Op::PUSHL_U64);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "pushl_f64") {
           bytes.emplace_back(lang::Op::PUSHL_F64);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "setl_i8") {
           bytes.emplace_back(lang::Op::SETL_I8);
-          arg_types.push_back(lang::type::_u8);
-          arg_types.push_back(lang::type::_i8);
+          arg_types.push_back(lang::DataType::_u8);
+          arg_types.push_back(lang::DataType::_i8);
         }
         else if (text == "setl_u8") {
           bytes.emplace_back(lang::Op::SETL_U8);
-          arg_types.push_back(lang::type::_u8);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "setl_bool") {
           bytes.emplace_back(lang::Op::SETL_BOOL);
-          arg_types.push_back(lang::type::_u8);
-          arg_types.push_back(lang::type::_bool);
+          arg_types.push_back(lang::DataType::_u8);
+          arg_types.push_back(lang::DataType::_bool);
         }
         else if (text == "setl_i16") {
           bytes.emplace_back(lang::Op::SETL_I16);
-          arg_types.push_back(lang::type::_u8);
-          arg_types.push_back(lang::type::_i16);
+          arg_types.push_back(lang::DataType::_u8);
+          arg_types.push_back(lang::DataType::_i16);
         }
         else if (text == "setl_u16") {
           bytes.emplace_back(lang::Op::SETL_U16);
-          arg_types.push_back(lang::type::_u8);
-          arg_types.push_back(lang::type::_u16);
+          arg_types.push_back(lang::DataType::_u8);
+          arg_types.push_back(lang::DataType::_u16);
         }
         else if (text == "setl_i32") {
           bytes.emplace_back(lang::Op::SETL_I32);
-          arg_types.push_back(lang::type::_u8);
-          arg_types.push_back(lang::type::_i32);
+          arg_types.push_back(lang::DataType::_u8);
+          arg_types.push_back(lang::DataType::_i32);
         }
         else if (text == "setl_u32") {
           bytes.emplace_back(lang::Op::SETL_U32);
-          arg_types.push_back(lang::type::_u8);
-          arg_types.push_back(lang::type::_u32);
+          arg_types.push_back(lang::DataType::_u8);
+          arg_types.push_back(lang::DataType::_u32);
         }
         else if (text == "setl_f32") {
           bytes.emplace_back(lang::Op::SETL_F32);
-          arg_types.push_back(lang::type::_u8);
-          arg_types.push_back(lang::type::_f32);
+          arg_types.push_back(lang::DataType::_u8);
+          arg_types.push_back(lang::DataType::_f32);
         }
         else if (text == "setl_i64") {
           bytes.emplace_back(lang::Op::SETL_I64);
-          arg_types.push_back(lang::type::_u8);
-          arg_types.push_back(lang::type::_i64);
+          arg_types.push_back(lang::DataType::_u8);
+          arg_types.push_back(lang::DataType::_i64);
         }
         else if (text == "setl_u64") {
           bytes.emplace_back(lang::Op::SETL_U64);
-          arg_types.push_back(lang::type::_u8);
-          arg_types.push_back(lang::type::_u64);
+          arg_types.push_back(lang::DataType::_u8);
+          arg_types.push_back(lang::DataType::_u64);
         }
         else if (text == "setl_f64") {
           bytes.emplace_back(lang::Op::SETL_F64);
-          arg_types.push_back(lang::type::_u8);
-          arg_types.push_back(lang::type::_f64);
+          arg_types.push_back(lang::DataType::_u8);
+          arg_types.push_back(lang::DataType::_f64);
         }
         else if (text == "add_i8") {
           bytes.emplace_back(lang::Op::ADD_I8);
@@ -728,7 +728,7 @@ int main(int argc, char** argv) {
         }
         else if (text == "dupg") {
           bytes.emplace_back(lang::Op::DUPG);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "dup1") {
           bytes.emplace_back(lang::Op::DUP1);
@@ -747,7 +747,7 @@ int main(int argc, char** argv) {
         }
         else if (text == "swapg") {
           bytes.emplace_back(lang::Op::SWAPG);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "swap1") {
           bytes.emplace_back(lang::Op::SWAP1);
@@ -766,7 +766,7 @@ int main(int argc, char** argv) {
         }
         else if (text == "popg") {
           bytes.emplace_back(lang::Op::POPG);
-          arg_types.push_back(lang::type::_u8);
+          arg_types.push_back(lang::DataType::_u8);
         }
         else if (text == "pop1") {
           bytes.emplace_back(lang::Op::POP1);
@@ -815,42 +815,42 @@ int main(int argc, char** argv) {
         }
         else if (text == "jz") {
           bytes.emplace_back(lang::Op::JZ);
-          arg_types.push_back(lang::type::_u64);
+          arg_types.push_back(lang::DataType::_u64);
         }
         else if (text == "jnz") {
           bytes.emplace_back(lang::Op::JNZ);
-          arg_types.push_back(lang::type::_u64);
+          arg_types.push_back(lang::DataType::_u64);
         }
         else if (text == "jl") {
           bytes.emplace_back(lang::Op::JL);
-          arg_types.push_back(lang::type::_u64);
+          arg_types.push_back(lang::DataType::_u64);
         }
         else if (text == "jg") {
           bytes.emplace_back(lang::Op::JG);
-          arg_types.push_back(lang::type::_u64);
+          arg_types.push_back(lang::DataType::_u64);
         }
         else if (text == "jnl") {
           bytes.emplace_back(lang::Op::JNL);
-          arg_types.push_back(lang::type::_u64);
+          arg_types.push_back(lang::DataType::_u64);
         }
         else if (text == "jng") {
           bytes.emplace_back(lang::Op::JNG);
-          arg_types.push_back(lang::type::_u64);
+          arg_types.push_back(lang::DataType::_u64);
         }
         else if (text == "jmp") {
           bytes.emplace_back(lang::Op::JMP);
-          arg_types.push_back(lang::type::_u64);
+          arg_types.push_back(lang::DataType::_u64);
         }
         else if (text == "ret") {
           bytes.emplace_back(lang::Op::RET);
         }
         else if (text == "dbg") {
           bytes.emplace_back(lang::Op::DBG);
-          arg_types.push_back(lang::type::_i8);
+          arg_types.push_back(lang::DataType::_i8);
         }
         else if (text == "sig") {
           bytes.emplace_back(lang::Op::SIG);
-          arg_types.push_back(lang::type::_i8);
+          arg_types.push_back(lang::DataType::_i8);
         } else {
           throw std::runtime_error("unknown opcode: " + text);
         }

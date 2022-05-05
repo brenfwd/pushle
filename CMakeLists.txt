@@ -10,11 +10,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-set(CMAKE_CXX_FLAGS "-O3 -g -Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-O2 -g -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "-O3 -g -Wall -Wextra -Wno-unknown-pragmas")
+set(CMAKE_CXX_FLAGS_DEBUG "-O2 -g -Wall -Wextra -Wno-unknown-pragmas")
 
-add_executable(assembler src/assembler.cpp)
-add_executable(vm src/main.cpp src/vm.cpp)
+add_executable(assembler src/assembler.cpp src/registry.cpp)
+add_executable(vm src/main.cpp src/vm.cpp src/registry.cpp)
 target_include_directories(assembler PUBLIC "${PROJECT_BINARY_DIR}/include")
 target_include_directories(vm PUBLIC "${PROJECT_BINARY_DIR}/include")
 

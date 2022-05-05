@@ -58,8 +58,8 @@ namespace lang {
 
   enum Op {
     _OP_T(PUSH_),
-    _OP_T(POPL_),
     _OP_T(PUSHL_),
+    _OP_T(POPL_),
     _OP_T(SETL_),
     
     _OP_N(ADD_),

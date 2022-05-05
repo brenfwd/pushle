@@ -342,13 +342,13 @@ int main(int argc, char** argv) {
   std::map<uint64_t, std::string> label_map_usages;
   for (auto& bytes : line_bytecode) {
     if (bytes.size() == 1 && bytes[0].is_label()) {
-      fmt::print("label DEFINE found: {} with bytecode.size() = {}\n", bytes[0].label(), bytecode.size());
+      // fmt::print("label DEFINE found: {} with bytecode.size() = {}\n", bytes[0].label(), bytecode.size());
       label_map[bytes[0].label()] = bytecode.size();
       continue;
     }
     for (auto& byte : bytes) {
       if (byte.is_label()) {
-        fmt::print("label USAGE found: {} with bytecode.size() = {}\n", byte.label(), bytecode.size());
+        // fmt::print("label USAGE found: {} with bytecode.size() = {}\n", byte.label(), bytecode.size());
         label_map_usages[bytecode.size()] = byte.label();
         for (unsigned int i = 0; i < 8; i++) {
           bytecode.emplace_back(0xff);
@@ -359,11 +359,11 @@ int main(int argc, char** argv) {
     }
   }
   for (auto& [label, index] : label_map) {
-    fmt::print("DISCOVER label '@{}' at index {}\n", label, index);
+    // fmt::print("DISCOVER label '@{}' at index {}\n", label, index);
   }
   for (auto& [index, label] : label_map_usages) {
     auto address = label_map[label];
-    fmt::print("REMAP index {}: '@{}' -> {}\n", index, label, address);
+    // fmt::print("REMAP index {}: '@{}' -> {}\n", index, label, address);
     // overwrite line_bytecode with the address as uint64_t little endian
     if (bytecode[index] != 0xff
       || bytecode[index + 1] != 0xff
@@ -387,8 +387,6 @@ int main(int argc, char** argv) {
 
   out.write(reinterpret_cast<char*>(bytecode.data()), bytecode.size());
   out.close();
-
-  fmt::print("done\n");
 
   return 0;
 }

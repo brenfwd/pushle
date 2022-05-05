@@ -10,10 +10,10 @@
 
 === source: ===
 
-u8 fib() {
-  u8 a = 0, b = 1;
+u64 fib() {
+  u64 a = 0, b = 1;
   for (u8 i = 0; i < 9; i++) {
-    u8 temp = a + b;
+    u64 temp = a + b;
     a = b;
     b = temp;
   }

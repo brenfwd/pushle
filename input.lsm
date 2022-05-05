@@ -1,28 +1,29 @@
-push_u8 0
-setl_u64 0 0
-setl_u64 1 1
-setl_u64 2 0
+push_u8 0       // stack i: u8 = 0
+setl_u64 0 0    // local a: u64 = 0
+setl_u64 1 1    // local b: u64 = 1
+setl_u64 2 0    // local temp: u64 = 0
 
 @loop_start
+  // if i !< 79 { goto loop_end }
   push_u8 79
   cmp_u8
   pop1
   jnl @loop_end
-  inc_u8
+  inc_u8 // i++
   
-  pushl_u64 0
-  pushl_u64 1
-  add_u64
-  popl_u64 2
-  pop8
+  pushl_u64 0 // push local a
+  pushl_u64 1 // push local b
+  add_u64     // sum
+  popl_u64 2  // pop to temp
+  pop8        // drop 8 bytes from pushed a
   
-  pushl_u64 1
-  popl_u64 0
-  pushl_u64 2
-  popl_u64 1
+  pushl_u64 1 // push local b
+  popl_u64 0  // pop to a (a = b)
+  pushl_u64 2 // push local temp
+  popl_u64 1  // pop to b (b = temp)
   jmp @loop_start
 @loop_end
 
-pop1
-pushl_u64 2
+pop1        // drop i
+pushl_u64 2 // push local temp (result)
 ret

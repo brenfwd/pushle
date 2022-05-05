@@ -6,7 +6,7 @@
 #include <map>
 #include <vector>
 
-namespace lang {
+namespace pushle {
 
 class Token {
 private:

@@ -79,7 +79,7 @@
   return_type prefix##4(__VA_ARGS__); \
   return_type prefix##8(__VA_ARGS__);
 
-namespace lang {
+namespace pushle {
   const size_t VM_STACK_SIZE = 1024 * 1024;
   const size_t VM_CALL_STACK_SIZE = 1024;
   const size_t VM_SCOPE_LOCALS_SIZE = 0xff;

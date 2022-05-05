@@ -1,9 +1,9 @@
-#include "vm.h"
+#include "pushle.h"
 
 #include <exception>
 #include <stdexcept>
 
-namespace lang {
+namespace pushle {
 
 VM::VM() {
   for (size_t i = 0; i < VM_STACK_SIZE; i++)
@@ -671,4 +671,4 @@ void VM::sig(int8_t i) {
 }
 
 
-} // namespace lang
+} // namespace pushle

@@ -40,7 +40,7 @@
   prefix##8, \
   prefix##16
 
-namespace lang {
+namespace pushle {
   enum DataType {
     _none,
     _i8,

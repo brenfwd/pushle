@@ -1,6 +1,6 @@
 #include "registry.h"
 
-namespace lang {
+namespace pushle {
 
 TokenRegistry *TokenRegistry::instance = nullptr;
 
@@ -221,7 +221,7 @@ TokenRegistry &TokenRegistry::getInstance() {
   instance->registerToken(Op::DBG,        "dbg",        {DataType::_i8});
   instance->registerToken(Op::SIG,        "sig",        {DataType::_i8});
   #pragma endregion exec
-  
+
   return *instance;
 }
 

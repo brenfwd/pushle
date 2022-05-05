@@ -190,11 +190,11 @@ int main(int argc, char** argv) {
 
   for (auto tokens : program_tokens) {
     std::vector<Bytecode> bytes;
-    std::vector<lang::DataType> arg_types;
-    // lang::DataType arg_types.push_back(lang::DataType::_none);
+    std::vector<pushle::DataType> arg_types;
+    // pushle::DataType arg_types.push_back(pushle::DataType::_none);
     for (auto token : tokens) {
       if (token.is_label()) {
-        if (!arg_types.empty() && arg_types.front() != lang::DataType::_u64) {
+        if (!arg_types.empty() && arg_types.front() != pushle::DataType::_u64) {
           throw std::runtime_error("Label can only be used with u64");
         } else if (!arg_types.empty()) {
           arg_types.erase(arg_types.begin());
@@ -205,38 +205,38 @@ int main(int argc, char** argv) {
         throw std::runtime_error("String not implemented");
       } else if (token.is_number()) {
         // pop from front
-        lang::DataType type = arg_types.front();
+        pushle::DataType type = arg_types.front();
         arg_types.erase(arg_types.begin());
         switch (type) {
-          case lang::DataType::_none: {
+          case pushle::DataType::_none: {
             throw std::runtime_error("Unexpected number");
           }
-          case lang::DataType::_i8: {
+          case pushle::DataType::_i8: {
             // push i8 to bytes
             bytes.emplace_back(std::stoi(token.text()));
             break;
           }
-          case lang::DataType::_u8:
-          case lang::DataType::_bool:  {// pretty much the same
+          case pushle::DataType::_u8:
+          case pushle::DataType::_bool:  {// pretty much the same
             // push u8 to bytes
             bytes.emplace_back(std::stoul(token.text()));
             break;
           }
-          case lang::DataType::_i16: {
+          case pushle::DataType::_i16: {
             // push i16 to bytes (little endian)
             int16_t i16 = std::stoi(token.text());
             bytes.emplace_back(i16 & 0xFF);
             bytes.emplace_back(i16 >> 8);
             break;
           }
-          case lang::DataType::_u16: {
+          case pushle::DataType::_u16: {
             // push u16 to bytes (little endian)
             uint16_t u16 = std::stoul(token.text());
             bytes.emplace_back(u16 & 0xFF);
             bytes.emplace_back(u16 >> 8);
             break;
           }
-          case lang::DataType::_i32: {
+          case pushle::DataType::_i32: {
             // push i32 to bytes (little endian)
             int32_t i32 = std::stoi(token.text());
             bytes.emplace_back(i32 & 0xFF);
@@ -245,7 +245,7 @@ int main(int argc, char** argv) {
             bytes.emplace_back(i32 >> 24);
             break;
           }
-          case lang::DataType::_u32: {
+          case pushle::DataType::_u32: {
             // push u32 to bytes (little endian)
             uint32_t u32 = std::stoul(token.text());
             bytes.emplace_back(u32 & 0xFF);
@@ -254,7 +254,7 @@ int main(int argc, char** argv) {
             bytes.emplace_back(u32 >> 24);
             break;
           }
-          case lang::DataType::_f32: {
+          case pushle::DataType::_f32: {
             // push f32 to bytes (little endian)
             float f32 = std::stof(token.text());
             uint32_t u32 = (union { float f; uint32_t u; }){f32}.u;
@@ -264,7 +264,7 @@ int main(int argc, char** argv) {
             bytes.emplace_back(u32 >> 24);
             break;
           }
-          case lang::DataType::_i64: {
+          case pushle::DataType::_i64: {
             // push i64 to bytes (little endian)
             int64_t i64 = std::stoll(token.text());
             bytes.emplace_back(i64 & 0xFF);
@@ -277,7 +277,7 @@ int main(int argc, char** argv) {
             bytes.emplace_back(i64 >> 56);
             break;
           }
-          case lang::DataType::_u64: {
+          case pushle::DataType::_u64: {
             // push u64 to bytes (little endian)
             uint64_t u64 = std::stoull(token.text());
             bytes.emplace_back(u64 & 0xFF);
@@ -290,7 +290,7 @@ int main(int argc, char** argv) {
             bytes.emplace_back(u64 >> 56);
             break;
           }
-          case lang::DataType::_f64: {
+          case pushle::DataType::_f64: {
             // push f64 to bytes (little endian)
             double f64 = std::stod(token.text());
             uint64_t u64 = (union { double f; uint64_t u; }){f64}.u;
@@ -312,7 +312,7 @@ int main(int argc, char** argv) {
         throw std::runtime_error("Unexpected token (expected argument)");
       } else {
         std::string text = token.text();
-        auto registry = lang::TokenRegistry::getInstance();
+        auto registry = pushle::TokenRegistry::getInstance();
         auto it = registry.getToken(text);
         if (it.has_value()) {
           auto token = it.value();
@@ -348,7 +348,6 @@ int main(int argc, char** argv) {
     }
     for (auto& byte : bytes) {
       if (byte.is_label()) {
-        // fmt::print("label USAGE found: {} with bytecode.size() = {}\n", byte.label(), bytecode.size());
         label_map_usages[bytecode.size()] = byte.label();
         for (unsigned int i = 0; i < 8; i++) {
           bytecode.emplace_back(0xff);
@@ -358,12 +357,8 @@ int main(int argc, char** argv) {
       }
     }
   }
-  for (auto& [label, index] : label_map) {
-    // fmt::print("DISCOVER label '@{}' at index {}\n", label, index);
-  }
   for (auto& [index, label] : label_map_usages) {
     auto address = label_map[label];
-    // fmt::print("REMAP index {}: '@{}' -> {}\n", index, label, address);
     // overwrite line_bytecode with the address as uint64_t little endian
     if (bytecode[index] != 0xff
       || bytecode[index + 1] != 0xff
